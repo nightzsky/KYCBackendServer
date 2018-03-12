@@ -121,7 +121,7 @@ def register_kyc():
 
 #    Userinfo = {"name":name,"postal_code":postal_code,"id_number":id_number,"dob":dob}
     
-#    languages.append(Userinfo)
+    languages.append(user_info)
     return jsonify(user_info)
 
 #@app.route("/register_org", methods = ['POST'])
