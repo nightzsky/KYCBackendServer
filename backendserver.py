@@ -54,6 +54,7 @@ def register_kyc():
     
     #generate key
     AES_key = Random.new().read(32)
+    print type(AES_key)
     print("Generating AES key: %s"%AES_key)
 
     RSA_pvt_key = RSA.generate(2048)
@@ -108,7 +109,7 @@ def register_kyc():
     
     token = {}
     token["private key"] = RSA_pvt_key_str.decode("utf-8")
-    token["AES key"] ="hi"
+    token["AES key"] = AES_key
     token["block id"] = block_id
     token["merkle raw"] = merkles.decode("utf-8")
         
