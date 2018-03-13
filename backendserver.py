@@ -104,7 +104,7 @@ def register_kyc():
     print("Token sent to user")
     
     token = {}
-    token["private key"] = RSA_pvt_key.decode("utf-8")
+    token["private key"] = RSA_pvt_key_str.decode("utf-8")
     token["AES key"] = AES_key.decode("utf-8")
     token["block id"] = block_id.decode("utf-8")
     token["merkle raw"] = merkles.decode("utf-8")
