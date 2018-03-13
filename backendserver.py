@@ -279,7 +279,7 @@ def aes_encrypt(data,key):
 def aes_decrypt(data,key):
 	iv = data[:16]
 	cipher = AES.new(key, AES.MODE_CFB, iv)
-	decrypted = cipher.decrypt(data[16:]).decode()
+	decrypted = cipher.decrypt(data[16:]).decode("utf-8")
 	return decrypted
 
 #function which encrypts data using RSA
