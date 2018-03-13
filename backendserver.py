@@ -79,7 +79,7 @@ def register_kyc():
     encrypted_user_info = {}
     print("Encrypting user info:%s"%str(user_info))
     for key in user_info:
-    encrypted_user_info[aes_encrypt(key, AES_key)] = aes_encrypt(user_info[key], AES_key)
+        encrypted_user_info[aes_encrypt(key, AES_key)] = aes_encrypt(user_info[key], AES_key)
     print("Encrypted user info: %s"%str(encrypted_user_info))
     print("Storing encrypted user info in block")
         
