@@ -97,7 +97,7 @@ def register_kyc():
   "userData": {
     "$class": "org.acme.biznet.UserData",
     "name": encrypted_user_info["name"],
-    "id": encrypted_user_info["id"],
+    "id": encrypted_user_info["id_number"],
     "postcode": encrypted_user_info["postal_code"],
     "birthdate": encrypted_user_info["dob"]
   },
