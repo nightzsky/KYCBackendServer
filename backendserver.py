@@ -10,7 +10,7 @@ languages = [{'name':'JavaScript'},{'name':'Python'},{'name':'Ruby'}]
 users = {}
 orgs = {}
 
-from flask import Flask,jsonify,request
+from flask import Flask,jsonify,request,Response
 #from __future__ import print_function
 #import sys
 #import demo
@@ -86,6 +86,7 @@ def register_kyc():
     
 #    block = Block(encrypted_user_info)
 #    print("block id: %d"%block.id)
+    block_id = 0
     print ("block id : 0")
     
     #store private key, AES key, and user's block id in the token
@@ -102,6 +103,19 @@ def register_kyc():
     print("Storing RSA private key, AES key, block ID and information used to compute merkle root in token")
 #    token = demo.Token(RSA_pvt_key_str,AES_key,0,merkle_raw)
     print("Token sent to user")
+    
+    Token = {}
+    Token["private key"] = RSA_pvt_key
+    Token["AES key"] = AES_key
+    Token["block id"] = block_id
+    Token["merkle raw"] = merkles
+    
+    outputData = json.dumps(Token)
+    
+    resp = Response(outputData, status = 200, mimetype = 'application/json')
+
+    
+    
 #    self.setToken(token)
     
     #post the data to the blockchain 
@@ -122,7 +136,8 @@ def register_kyc():
 #    Userinfo = {"name":name,"postal_code":postal_code,"id_number":id_number,"dob":dob}
     
     languages.append(user_info)
-    return jsonify(user_info)
+    return resp
+#    return jsonify(user_info)
 
 #@app.route("/register_org", methods = ['POST'])
 #def register_org():
