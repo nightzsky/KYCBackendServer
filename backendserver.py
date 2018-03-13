@@ -109,7 +109,7 @@ def register_kyc():
     
     token = {}
     token["private key"] = RSA_pvt_key_str.decode("utf-8")
-    token["AES key"] = AES_key.decode("utf-8")
+    token["AES key"] = AES_key.decode("cp437")
     token["block id"] = block_id
     token["merkle raw"] = merkles.decode("utf-8")
         
@@ -267,7 +267,7 @@ def aes_encrypt(data,key):
 def aes_decrypt(data,key):
 	iv = data[:16]
 	cipher = AES.new(key, AES.MODE_CFB, iv)
-	decrypted = cipher.decrypt(data[16:]).decode("utf-8")
+	decrypted = cipher.decrypt(data[16:]).decode()
 	return decrypted
 
 #function which encrypts data using RSA
