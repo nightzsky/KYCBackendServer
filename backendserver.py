@@ -110,7 +110,10 @@ def register_kyc():
     Token["block id"] = block_id
     Token["merkle raw"] = merkles
     
-    outputData = json.dumps(Token)
+    print Token
+    
+    
+    outputData = jsonify(Token)
     
     resp = Response(outputData, status = 200, mimetype = 'application/json')
 
