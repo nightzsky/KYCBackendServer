@@ -53,7 +53,7 @@ def register_kyc():
     user_info["dob"] = dob
     
     #generate key
-    AES_key = Random.new().read(32).decode("cp437")
+    AES_key = Random.new().read(32)
     print type(AES_key)
     print("Generating AES key: %s"%AES_key)
 
