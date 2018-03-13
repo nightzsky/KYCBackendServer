@@ -102,7 +102,7 @@ def register_kyc():
     "birthdate": encrypted_user_info["dob"]
   },
   "access": True
-}))
+}).decode("utf-8"))
         
     #store private key, AES key, and user's block id in the token
     #first get private key as plaintext
