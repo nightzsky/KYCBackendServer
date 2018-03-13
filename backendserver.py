@@ -89,8 +89,20 @@ def register_kyc():
         
     #    block = Block(encrypted_user_info)
     #    print("block id: %d"%block.id)
-    block_id = 0
-    print ("block id : 0")
+    block_id = crypto_functions.hash256(user["id_number"])
+    requests.post("http://173.193.102.98:31090/User", json = {
+  "$class": "org.acme.biznet.User",
+  "userId": block_id,
+  "name": encrypted_user_info["name"],
+  "userData": {
+    "$class": "org.acme.biznet.UserData",
+    "name": encrypted_user_info["name"],
+    "id": encrypted_user_info["id"],
+    "postcode": encrypted_user_info["postal_code"],
+    "birthdate": encrypted_user_info["dob"]
+  },
+  "access": true
+})
         
     #store private key, AES key, and user's block id in the token
     #first get private key as plaintext
