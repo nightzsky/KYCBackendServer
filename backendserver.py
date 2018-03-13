@@ -89,7 +89,7 @@ def register_kyc():
         
     #    block = Block(encrypted_user_info)
     #    print("block id: %d"%block.id)
-    block_id = crypto_functions.hash256(user["id_number"])
+    block_id = hash256(user_info["id_number"])
     requests.post("http://173.193.102.98:31090/User", json = {
   "$class": "org.acme.biznet.User",
   "userId": block_id,
