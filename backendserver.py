@@ -45,8 +45,7 @@ def register_kyc():
     postal_code = request.json["postal_code"]
     id_number = request.json["id_number"]
     dob = request.json["dob"]
-    username = request.json["username"]
-    password = request.json["password"]
+
     #add it to the user_info dictionary
     user_info["name"] = name
     user_info["postal_code"] = postal_code       
