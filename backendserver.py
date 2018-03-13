@@ -113,10 +113,10 @@ def register_kyc():
     print Token
     
     
-    outputData = jsonify(Token)
+    outputData = jsonify(Token).decode("utf-8")
     
     resp = Response(outputData, status = 200, mimetype = 'application/json')
-
+    print resp
     
     
 #    self.setToken(token)
