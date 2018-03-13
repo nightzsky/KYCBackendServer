@@ -138,8 +138,7 @@ def register_kyc():
     languages.append(user_info)
     return resp
 
-@app.route("/login_org", methods = ['POST'])
-def login_org():
+
     
     
 
