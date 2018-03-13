@@ -113,9 +113,9 @@ def register_kyc():
     print Token
     
     
-    outputData = jsonify(Token)
+#    outputData = jsonify(Token)
     
-    resp = Response(outputData, status = 200, mimetype = 'application/json')
+#    resp = Response(outputData, status = 200, mimetype = 'application/json')
 #    print resp
     
     
