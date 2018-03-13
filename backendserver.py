@@ -34,90 +34,88 @@ def receiveInformation():
 def hello():    
     return jsonify({"languages":languages})
 
-@app.route("/register_kyc", methods = ['GET','POST'])
+@app.route("/register_kyc", methods = ['POST'])
 def register_kyc():
     #create a new dictionary
-    if flask.request.method == 'POST':
-        user_info = {}
+    user_info = {}  
     
-        #retrieve data
-        name = request.json["name"]
-        postal_code = request.json["postal_code"]
-        id_number = request.json["id_number"]
-        dob = request.json["dob"]
+    #retrieve data
+    name = request.json["name"]
+    postal_code = request.json["postal_code"]
+    id_number = request.json["id_number"]
+    dob = request.json["dob"]
+    #add it to the user_info dictionary
+    user_info["name"] = name
+    user_info["postal_code"] = postal_code       
+    user_info["id_number"] = id_number
+    user_info["dob"] = dob
     
-        #add it to the user_info dictionary
-        user_info["name"] = name
-        user_info["postal_code"] = postal_code
-        user_info["id_number"] = id_number
-        user_info["dob"] = dob
-    
-        #generate key
-        AES_key = Random.new().read(32)
-        print("Generating AES key: %s"%AES_key)
-        RSA_pvt_key = RSA.generate(2048)
-        RSA_pub_key = RSA_pvt_key.publickey()
+    #generate key
+    AES_key = Random.new().read(32)
+    print("Generating AES key: %s"%AES_key)
+    RSA_pvt_key = RSA.generate(2048)
+    RSA_pub_key = RSA_pvt_key.publickey()
         
-        #create Merkle tree hash from user information, and add it to the dictionary
-        merkle_raw = user_info.copy().values() #make a copy of the information used to create the merkle tree 
-        hashed_info = [hash256(item) for item in merkle_raw]
-        merkles = merkle(hashed_info)
-        print("Computed merkle root: %s"%merkles)
-        print("Storing merkle root in user info")
-        user_info["merkle"] = merkles
+    #create Merkle tree hash from user information, and add it to the dictionary
+    merkle_raw = user_info.copy().values() #make a copy of the information used to create the merkle tree 
+    hashed_info = [hash256(item) for item in merkle_raw]
+    merkles = merkle(hashed_info)
+    print("Computed merkle root: %s"%merkles)
+    print("Storing merkle root in user info")
+    user_info["merkle"] = merkles
         
-        #write key to the file then read the same file to obtain the key in plaintext
-        f = open("publicKey.pem", "a+b")
-        f.write(RSA_pub_key.exportKey('PEM'))
-        f.seek(0)
-        RSA_pub_key_str = f.read()
-        print("Generating RSA public key: %s"%RSA_pub_key_str)
-        f.close()
-        #delete file after this to prevent key from being stored as a file
-        os.remove("publicKey.pem")
-        print("Storing RSA public key in user info")
-        user_info["public_key"] = RSA_pub_key_str
+    #write key to the file then read the same file to obtain the key in plaintext
+    f = open("publicKey.pem", "a+b")
+    f.write(RSA_pub_key.exportKey('PEM'))
+    f.seek(0)
+    RSA_pub_key_str = f.read()
+    print("Generating RSA public key: %s"%RSA_pub_key_str)
+    f.close()
+    #delete file after this to prevent key from being stored as a file
+    os.remove("publicKey.pem")
+    print("Storing RSA public key in user info")
+    user_info["public_key"] = RSA_pub_key_str
         
-        encrypted_user_info = {}
-        print("Encrypting user info:%s"%str(user_info))
-        for key in user_info:
-            encrypted_user_info[aes_encrypt(key, AES_key)] = aes_encrypt(user_info[key], AES_key)
-        print("Encrypted user info: %s"%str(encrypted_user_info))
-        print("Storing encrypted user info in block")
+    encrypted_user_info = {}
+    print("Encrypting user info:%s"%str(user_info))
+    for key in user_info:
+    encrypted_user_info[aes_encrypt(key, AES_key)] = aes_encrypt(user_info[key], AES_key)
+    print("Encrypted user info: %s"%str(encrypted_user_info))
+    print("Storing encrypted user info in block")
         
     #    block = Block(encrypted_user_info)
     #    print("block id: %d"%block.id)
-        block_id = 0
-        print ("block id : 0")
+    block_id = 0
+    print ("block id : 0")
         
-        #store private key, AES key, and user's block id in the token
-        #first get private key as plaintext
-        f = open("privateKey.pem", "a+b")
-        f.write(RSA_pvt_key.exportKey('PEM'))
-        f.seek(0)
-        RSA_pvt_key_str = f.read()
-        print("Generating RSA private key: %s"%RSA_pvt_key_str)
-        f.close()
-        #delete file after this to prevent key from being stored as a file
-        os.remove("privateKey.pem")
-        #create the token object, and assign it to the user who is registering
-        print("Storing RSA private key, AES key, block ID and information used to compute merkle root in token")
+    #store private key, AES key, and user's block id in the token
+    #first get private key as plaintext
+    f = open("privateKey.pem", "a+b")
+    f.write(RSA_pvt_key.exportKey('PEM'))
+    f.seek(0)
+    RSA_pvt_key_str = f.read()
+    print("Generating RSA private key: %s"%RSA_pvt_key_str)
+    f.close()
+    #delete file after this to prevent key from being stored as a file
+    os.remove("privateKey.pem")
+    #create the token object, and assign it to the user who is registering
+    print("Storing RSA private key, AES key, block ID and information used to compute merkle root in token")
     #    token = demo.Token(RSA_pvt_key_str,AES_key,0,merkle_raw)
-        print("Token sent to user")
+    print("Token sent to user")
+    
+    Token = {}
+    Token["private key"] = RSA_pvt_key
+    Token["AES key"] = AES_key
+    Token["block id"] = block_id
+    Token["merkle raw"] = merkles
         
-        Token = {}
-        Token["private key"] = RSA_pvt_key
-        Token["AES key"] = AES_key
-        Token["block id"] = block_id
-        Token["merkle raw"] = merkles
-        
-        print Token
+    print Token
         
         
         
-        resp = jsonify(Token)
-        resp.status_code = 200
-        print resp
+    resp = jsonify(Token)
+    resp.status_code = 200
+    print resp
         
         
     #    self.setToken(token)
@@ -131,7 +129,7 @@ def register_kyc():
     #    print r.status_code
     #    print r.text
      
-        print "received data"
+    print "received data"
     #    users[id_number] = user
     #    user.register_kyc()
     #    for keys,values in users.items():
@@ -139,10 +137,9 @@ def register_kyc():
     
     #    Userinfo = {"name":name,"postal_code":postal_code,"id_number":id_number,"dob":dob}
         
-        languages.append(user_info)
-        return resp
-    else:
-        return jsonify({"languages":"bye"})
+    languages.append(user_info)
+    return resp
+
 #    return jsonify(user_info)
 
 #@app.route("/register_org", methods = ['POST'])
