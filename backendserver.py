@@ -103,17 +103,17 @@ def register_kyc():
     #    token = demo.Token(RSA_pvt_key_str,AES_key,0,merkle_raw)
     print("Token sent to user")
     
-    Token = {}
-    Token["private key"] = RSA_pvt_key
-    Token["AES key"] = AES_key
-    Token["block id"] = block_id
-    Token["merkle raw"] = merkles
+    token = {}
+    token["private key"] = RSA_pvt_key
+    token["AES key"] = AES_key
+    token["block id"] = block_id
+    token["merkle raw"] = merkles
         
-    print Token
+    print token
         
         
         
-    resp = jsonify(Token)
+    resp = jsonify(token)
     resp.status_code = 200
     print resp
         
