@@ -113,10 +113,10 @@ def register_kyc():
     print Token
     
     
-    outputData = jsonify(Token).decode("utf-8")
+    outputData = jsonify(Token)
     
     resp = Response(outputData, status = 200, mimetype = 'application/json')
-    print resp
+#    print resp
     
     
 #    self.setToken(token)
@@ -139,7 +139,7 @@ def register_kyc():
 #    Userinfo = {"name":name,"postal_code":postal_code,"id_number":id_number,"dob":dob}
     
     languages.append(user_info)
-    return resp
+    return "hi"
 #    return jsonify(user_info)
 
 #@app.route("/register_org", methods = ['POST'])
