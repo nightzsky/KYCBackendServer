@@ -52,8 +52,6 @@ def register_kyc():
     user_info["postal_code"] = postal_code       
     user_info["id_number"] = id_number
     user_info["dob"] = dob
-    user_info["username"] = username
-    user_info["password"] = password
     
     #generate key
     AES_key = Random.new().read(32)
