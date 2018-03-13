@@ -23,6 +23,7 @@ import base64
 import json
 import requests
 import os
+from functools import wraps
 app = Flask(__name__)
 
 
@@ -44,11 +45,15 @@ def register_kyc():
     postal_code = request.json["postal_code"]
     id_number = request.json["id_number"]
     dob = request.json["dob"]
+    username = request.json["username"]
+    password = request.json["password"]
     #add it to the user_info dictionary
     user_info["name"] = name
     user_info["postal_code"] = postal_code       
     user_info["id_number"] = id_number
     user_info["dob"] = dob
+    user_info["username"] = username
+    user_info["password"] = password
     
     #generate key
     AES_key = Random.new().read(32)
@@ -80,7 +85,7 @@ def register_kyc():
     encrypted_user_info = {}
     print("Encrypting user info:%s"%str(user_info))
     for key in user_info:
-        encrypted_user_info[aes_encrypt(key, AES_key)] = aes_encrypt(user_info[key], AES_key)
+        encrypted_user_info[key] = aes_encrypt(user_info[key], AES_key)
     print("Encrypted user info: %s"%str(encrypted_user_info))
     print("Storing encrypted user info in block")
         
@@ -119,9 +124,7 @@ def register_kyc():
     print resp
         
         
-    #    self.setToken(token)
-        
-        #post the data to the blockchain 
+    #post the data to the blockchain 
     #    blockchain_ip = "173.193.102.98"
     #    
     #    r = requests.post("http://%s:31090/api/revokeAccess"%blockchain_ip, json = encrypted_user_info)
@@ -131,15 +134,14 @@ def register_kyc():
     #    print r.text
      
     print "received data"
-    #    users[id_number] = user
-    #    user.register_kyc()
-    #    for keys,values in users.items():
-    #      print(keys)
-    
-    #    Userinfo = {"name":name,"postal_code":postal_code,"id_number":id_number,"dob":dob}
         
     languages.append(user_info)
     return resp
+
+@app.route("/login_org", methods = ['POST'])
+def login_org():
+    
+    
 
 #    return jsonify(user_info)
 
@@ -319,6 +321,31 @@ def merkle(data):
 		temp.append(merkle(data[i:i+2]))
 
 	return merkle(temp)
+
+def check_auth(username, password):
+    return username == 'admin' and password == 'secret'
+
+def authenticate():
+    message = {'message':"Authenticate."}
+    
+    resp = jsonify(message)
+    resp.status_code = 401
+    resp.headers['WWW-Authenticate'] = 'Basic realm = "Example"'
+    
+    return resp
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args,**kwargs):
+        auth = request.authorization
+        if not auth:
+            return authenticate()
+        
+        elif not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    
+    return decorated
     
 
 if __name__ == "__main__":
