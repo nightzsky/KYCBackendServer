@@ -114,9 +114,9 @@ def register_kyc():
         print Token
         
         
-        outputData = jsonify(Token)
         
-        resp = Response(outputData, status = 200, mimetype = 'application/json')
+        resp = jsonify(Token)
+        resp.status_code = 200
         print resp
         
         
@@ -140,7 +140,7 @@ def register_kyc():
     #    Userinfo = {"name":name,"postal_code":postal_code,"id_number":id_number,"dob":dob}
         
         languages.append(user_info)
-        return jsonify(user_info)
+        return resp
     else:
         return jsonify({"languages":"bye"})
 #    return jsonify(user_info)
