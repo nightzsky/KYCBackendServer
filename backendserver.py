@@ -21,6 +21,7 @@ from Crypto.Hash import SHA256
 from Crypto import Random
 import base64
 import json
+import string
 import requests
 import os
 from functools import wraps
@@ -45,114 +46,120 @@ def register_kyc():
     postal_code = request.json["postal_code"]
     id_number = request.json["id_number"]
     dob = request.json["dob"]
-
-    #add it to the user_info dictionary
-    user_info["name"] = name
-    user_info["postal_code"] = postal_code       
-    user_info["id_number"] = id_number
-    user_info["dob"] = dob
     
-    #generate key
-    AES_key = Random.new().read(32)
-#    print type(AES_key)
-    print("Generating AES key: %s"%AES_key)
+    if(not isValidName(name)) or not (isValidId(id_number)) or  not (isValidDob(dob)) or not (isValidPostCode(postal_code)):
+        resp = Response(json.dumps({"message":"invalid input"}))
+        resp.status_code = 400
+        return resp
+    else:
 
-    RSA_pvt_key = RSA.generate(2048)
-    RSA_pub_key = RSA_pvt_key.publickey()
+        #add it to the user_info dictionary
+        user_info["name"] = name
+        user_info["postal_code"] = postal_code       
+        user_info["id_number"] = id_number
+        user_info["dob"] = dob
         
-    #create Merkle tree hash from user information, and add it to the dictionary
-    merkle_raw = user_info.copy().values() #make a copy of the information used to create the merkle tree 
-    hashed_info = [hash256(item) for item in merkle_raw]
-    merkles = merkle(hashed_info)
-    print("Computed merkle root: %s"%merkles)
-    print("Storing merkle root in user info")
-    user_info["merkle"] = merkles
-        
-    #write key to the file then read the same file to obtain the key in plaintext
-    f = open("publicKey.pem", "a+b")
-    f.write(RSA_pub_key.exportKey('PEM'))
-    f.seek(0)
-    RSA_pub_key_str = f.read()
-    print("Generating RSA public key: %s"%RSA_pub_key_str)
-    f.close()
-    #delete file after this to prevent key from being stored as a file
-    os.remove("publicKey.pem")
-    print("Storing RSA public key in user info")
-    user_info["public_key"] = RSA_pub_key_str
-        
-    encrypted_user_info = {}
-    print("Encrypting user info:%s"%str(user_info))
-    for key in user_info:
-        encrypted_user_info[key] = aes_encrypt(user_info[key], AES_key)
-    print("Encrypted user info: %s"%str(encrypted_user_info))
-    print("Storing encrypted user info in block")
-        
-    #    block = Block(encrypted_user_info)
-    #    print("block id: %d"%block.id)
-    block_id = hash256(user_info["id_number"])
-#    headers = {"Content-Type":"application/json"}
-    #payload = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True}
-    payload = {
-  "$class": "org.acme.biznet.User",
-  "hashed_id": encrypted_user_info["id_number"],
-  "userData": {
-    "$class": "org.acme.biznet.UserData",
-    "name": encrypted_user_info["name"],
-    "encrypted_id": encrypted_user_info["id_number"],
-    "postcode": encrypted_user_info["postal_code"],
-    "birthdate": encrypted_user_info["dob"],
-    "merkle_root": encrypted_user_info["merkle"],
-    "rsa_public_key": encrypted_user_info["public_key"]
-  },
-  "access": True
-}
-    r = requests.post("http://173.193.102.98:31090/api/User?access_token=IAKxrB59D9QWATWgBJqhJNK6f4rUEBu1YLjBjewoyOu8Ri6fE78OcnsFhFiM1qmX", json = payload)
-
-    print(r.status_code)
-    print(r.text)
-    #store private key, AES key, and user's block id in the token
-    #first get private key as plaintext
-    f = open("privateKey.pem", "a+b")
-    f.write(RSA_pvt_key.exportKey('PEM'))
-    f.seek(0)
-    RSA_pvt_key_str = f.read()
-    print("Generating RSA private key: %s"%RSA_pvt_key_str)
-    f.close()
-    #delete file after this to prevent key from being stored as a file
-    os.remove("privateKey.pem")
-    #create the token object, and assign it to the user who is registering
-    print("Storing RSA private key, AES key, block ID and information used to compute merkle root in token")
-    #    token = demo.Token(RSA_pvt_key_str,AES_key,0,merkle_raw)
-    print("Token sent to user")
+        #generate key
+        AES_key = Random.new().read(32)
+    #    print type(AES_key)
+        print("Generating AES key: %s"%AES_key)
     
-    token = {}
-    token["private_key"] = RSA_pvt_key_str.decode("utf-8")
-    token["AES_key"] = AES_key.decode("cp437")
-    token["block_id"] = block_id
-    token["merkle_raw"] = merkles
+        RSA_pvt_key = RSA.generate(2048)
+        RSA_pub_key = RSA_pvt_key.publickey()
+            
+        #create Merkle tree hash from user information, and add it to the dictionary
+        merkle_raw = user_info.copy().values() #make a copy of the information used to create the merkle tree 
+        hashed_info = [hash256(item) for item in merkle_raw]
+        merkles = merkle(hashed_info)
+        print("Computed merkle root: %s"%merkles)
+        print("Storing merkle root in user info")
+        user_info["merkle"] = merkles
+            
+        #write key to the file then read the same file to obtain the key in plaintext
+        f = open("publicKey.pem", "a+b")
+        f.write(RSA_pub_key.exportKey('PEM'))
+        f.seek(0)
+        RSA_pub_key_str = f.read()
+        print("Generating RSA public key: %s"%RSA_pub_key_str)
+        f.close()
+        #delete file after this to prevent key from being stored as a file
+        os.remove("publicKey.pem")
+        print("Storing RSA public key in user info")
+        user_info["public_key"] = RSA_pub_key_str
+            
+        encrypted_user_info = {}
+        print("Encrypting user info:%s"%str(user_info))
+        for key in user_info:
+            encrypted_user_info[key] = aes_encrypt(user_info[key], AES_key)
+        print("Encrypted user info: %s"%str(encrypted_user_info))
+        print("Storing encrypted user info in block")
+            
+        #    block = Block(encrypted_user_info)
+        #    print("block id: %d"%block.id)
+        block_id = hash256(user_info["id_number"])
+    #    headers = {"Content-Type":"application/json"}
+        #payload = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True}
+        payload = {
+      "$class": "org.acme.biznet.User",
+      "hashed_id": encrypted_user_info["id_number"],
+      "userData": {
+        "$class": "org.acme.biznet.UserData",
+        "name": encrypted_user_info["name"],
+        "encrypted_id": encrypted_user_info["id_number"],
+        "postcode": encrypted_user_info["postal_code"],
+        "birthdate": encrypted_user_info["dob"],
+        "merkle_root": encrypted_user_info["merkle"],
+        "rsa_public_key": encrypted_user_info["public_key"]
+      },
+      "access": True
+    }
+        r = requests.post("http://173.193.102.98:31090/api/User?access_token=IAKxrB59D9QWATWgBJqhJNK6f4rUEBu1YLjBjewoyOu8Ri6fE78OcnsFhFiM1qmX", json = payload)
+    
+        print(r.status_code)
+        print(r.text)
+        #store private key, AES key, and user's block id in the token
+        #first get private key as plaintext
+        f = open("privateKey.pem", "a+b")
+        f.write(RSA_pvt_key.exportKey('PEM'))
+        f.seek(0)
+        RSA_pvt_key_str = f.read()
+        print("Generating RSA private key: %s"%RSA_pvt_key_str)
+        f.close()
+        #delete file after this to prevent key from being stored as a file
+        os.remove("privateKey.pem")
+        #create the token object, and assign it to the user who is registering
+        print("Storing RSA private key, AES key, block ID and information used to compute merkle root in token")
+        #    token = demo.Token(RSA_pvt_key_str,AES_key,0,merkle_raw)
+        print("Token sent to user")
         
-    print(token)
-        
-        
-        
-    resp = Response(json.dumps(token))
-    resp.status_code = 200
-    print(resp)
-        
-        
-    #post the data to the blockchain 
-    #    blockchain_ip = "173.193.102.98"
-    #    
-    #    r = requests.post("http://%s:31090/api/revokeAccess"%blockchain_ip, json = encrypted_user_info)
-    #
-    #    print r
-    #    print r.status_code
-    #    print r.text
-     
-    print("received data")
-        
-    languages.append(user_info)
-    return resp
+        token = {}
+        token["private_key"] = RSA_pvt_key_str.decode("utf-8")
+        token["AES_key"] = AES_key.decode("cp437")
+        token["block_id"] = block_id
+        token["merkle_raw"] = merkles
+            
+        print(token)
+            
+            
+            
+        resp = Response(json.dumps(token))
+        resp.status_code = 200
+        print(resp)
+            
+            
+        #post the data to the blockchain 
+        #    blockchain_ip = "173.193.102.98"
+        #    
+        #    r = requests.post("http://%s:31090/api/revokeAccess"%blockchain_ip, json = encrypted_user_info)
+        #
+        #    print r
+        #    print r.status_code
+        #    print r.text
+         
+        print("received data")
+            
+        languages.append(user_info)
+        return resp
 
 @app.route("/register_org", methods=['POST'])
 def register_org():
@@ -185,6 +192,7 @@ def aes_encrypt(data,key):
 def aes_decrypt(data,key):
 	if type(data) != bytes:
 		try:
+            print(data)
 			data = bytes(ast.literal_eval(data))
 		except:
 			print("Error: could not interpret data for decryption")
@@ -242,6 +250,55 @@ def merkle(data):
 		temp.append(merkle(data[i:i+2]))
 
 	return merkle(temp)
+
+def isValidName(name):
+	if type(name)!=str:
+		return False
+	for letter in name:
+		if letter.isdigit() or letter in string.punctuation:
+			return False
+	return True
+
+def isValidId(idee):
+	if type(idee) != str:
+		return False
+	for letter in idee:
+		if not letter.isalnum():
+			return False
+	return True
+
+def isValidDob(dob):
+	split = dob.split("/")
+	if len(split) != 3:
+		return False
+	for num in split:
+		if not num.isdigit():
+			return False
+	if len(split[0]) != 2 or len(split[1]) != 2 or len(split[2])!= 4:
+		return False
+
+	if int(split[1]) > 12 or int(split[1]) == 0:
+		return False
+
+	long_months = ['01', '03', '05', '07', '08', '10', '12']
+	short_months = ['04', '06', '09', '11']
+
+
+	if split[1] == '02' and int(split[0]) > 29:
+		return False
+	elif split[1] in long_months and int(split[0]) > 31:
+		return False
+	elif split[1] in short_months and int(split[0]) > 31:
+		return False
+
+	return True
+
+def isValidPostCode(postcode):
+	if len(postcode) != 6:
+		return False
+	if not postcode.isdigit():
+		return False
+	return True
 
 
 
