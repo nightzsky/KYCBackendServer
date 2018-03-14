@@ -91,7 +91,21 @@ def register_kyc():
     #    print("block id: %d"%block.id)
     block_id = hash256(user_info["id_number"])
 #    headers = {"Content-Type":"application/json"}
-    payload = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True}
+    #payload = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True}
+    payload = {
+  "$class": "org.acme.biznet.User",
+  "hashed_id": "string",
+  "userData": {
+    "$class": "org.acme.biznet.UserData",
+    "name": encrypted_user_info["name"],
+    "encrypted_id": encrypted_user_info["id_number"],
+    "postcode": encrypted_user_info["postal_code"],
+    "birthdate": encrypted_user_info["dob"],
+    "merkle_root": encrypted_user_info["merkle"],
+    "rsa_public_key": encrypted_user_info["public_key"]
+  },
+  "access": True
+}
     r = requests.post("http://173.193.102.98:31090/api/User?access_token=IAKxrB59D9QWATWgBJqhJNK6f4rUEBu1YLjBjewoyOu8Ri6fE78OcnsFhFiM1qmX", json = payload)
 
     print(r.status_code)
