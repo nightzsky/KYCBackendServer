@@ -90,9 +90,11 @@ def register_kyc():
     #    block = Block(encrypted_user_info)
     #    print("block id: %d"%block.id)
     block_id = hash256(user_info["id_number"])
-    headers = {"content_type":"application/json"}
-    r=requests.post("http://173.193.102.98:31090/api/User", data = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True},
-                    headers = headers)
+    headers = {"Content-Type":"application/json"}
+    payload = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True}
+    r = requests.post("http://173.193.102.98:31090/api/User", data = json.dumps(payload),headers = headers)
+#    r=requests.post("http://173.193.102.98:31090/api/User", data = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True},
+#                    headers = headers)
     print r.status_code
     print r.text
     #store private key, AES key, and user's block id in the token
