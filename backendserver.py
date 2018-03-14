@@ -122,7 +122,7 @@ def register_kyc():
         
         
         
-    resp = jsonify(token)
+    resp = json.dumps(token)
     resp.status_code = 200
     print(resp)
         
