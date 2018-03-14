@@ -92,7 +92,7 @@ def register_kyc():
     block_id = hash256(user_info["id_number"])
     headers = {"Content-Type":"application/json"}
     payload = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True}
-    r = requests.post("http://173.193.102.98:31090/api/User", data = jsonify(payload) ,headers = headers)
+    r = requests.post("http://173.193.102.98:31090/api/User", json = payload ,headers = headers)
 #    r=requests.post("http://173.193.102.98:31090/api/User", data = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True},
 #                    headers = headers)
     print(r.status_code)
@@ -142,120 +142,6 @@ def register_kyc():
     return resp
 
 
-    
-    
-
-#    return jsonify(user_info)
-
-#@app.route("/register_org", methods = ['POST'])
-#def register_org():
-#    request_received = request.json["request"]
-#    if (request_received == "generate_keys"):
-#        org_name = request.json["org_name"]
-#        RSA_pvt_key = RSA.generate(2048)
-#        RSA_pub_key = RSA_pvt_key.publickey()
-#        
-#        org_data = {}
-#        org_data["name"] = org_name
-#        org_data["private key"] = RSA_pvt_key
-#        org_data["public key"] = RSA_pub_key
-#        
-#        return jsonify(org_data)
-#    
-#    else if (request_received == "encrypt_key_id"):
-#        RSA_pub_key = request.json["public key"]
-#        AES_key = request.json["AES key"]
-#        block_id = request.json["block_id"]
-#        
-#        encrypted_AES_key = RSA_encrypt(AES_key, RSA_pub_key)
-#        
-#        encrypted_key_id = {}
-#        encrypted_key_id["AES key"] = encrypted_AES_key
-#        encrypted_key_id["Block id"] = block_id
-#        
-#        return jsonify(encrypted_key_id)
-#    
-#    else if (request_received == "access_user_block"):
-#        RSA_pvt_key = request.json["private key"]
-#        encrypted_AES_key = request.json["AES key"]
-#        block_id = request.json["Block id"]
-#        username = request.json["username"]
-#        password = request.json["password"]
-#        
-#        decrypted_AES_key = RSA_decrypt(encrypted_AES_key, RSA_pvt_key)
-#        block_list = {"111": {"name":"hi"}}
-#        
-#        if block not in block_list_id.keys():
-#            message = {"message":"Block ID is invalid/does not exists!"}
-#            return jsonify(message)
-#        else:
-#            encrypted_block = block_list_id[block_id]
-#            decrypted_block = aes_decrypt(encrypted_block, decrypted_AES_key)
-#            return jsonify(decrypted_block)
-#        
-#    else if (request_received == "reencrypt_block"):
-#        new_AES_key = 
-        
-        
-
-#@app.route("/login_org", methods = ['POST'])
-#def loginorg():
-#    org_name = request.json["org_name"]
-#    if org_name not in orgs:
-#        org = demo.Organization(org_name)
-#        orgs[org_name] = org
-#    else:
-#        org = orgs[org_name]
-#    demo.login_org(org)
-#    
-##function which allows a user to register with a organization, provided that he has already registered with KYC service
-#def register_org(self,org):
-#	#organization first generates a public-private key pair, and sends the public key to the user
-#	org.generateKey()
-#	#write key to the file then read the same file to obtain the key in plaintext
-#	f = open("publicKey.pem", "a+b")
-#	f.write(org.RSA_pub_key.exportKey('PEM'))
-#	f.seek(0)
-#	RSA_pub_key_str = f.read()
-#	print("%s generating RSA public key: %s"%(org.name,RSA_pub_key_str))
-#	f.close()
-#
-#	#delete file after this to prevent key from being stored as a file
-#	os.remove("publicKey.pem")
-#	print("%s sending RSA public key to %s"%(org.name,self.name))
-#	org.sendPublicKey(self)
-#
-#	#user inputs the username and password that he wants
-#	self.username = raw_input("Registration: please enter username: ")
-#	password = getpass.getpass("Please enter password: ")
-#	self.password_hash = crypto_functions.hash256(password)
-#	print("Computing hash of password: %s"%self.password_hash)
-#
-#	#password is stored as hash for security reasons
-#	#user scans his token, and the block id and AES key is encrypted using the public key and sent back to the organization
-#	#simulation of virtual token, type in ID number to scan token
-#	token = users[raw_input("Please scan your token: ")].token
-#	message = "{'request': 'register', 'block_id': '%s', 'username': '%s', 'password_hash': '%s', 'aes_key': %s}" %(token.block_id,self.username, self.password_hash, token.AES_key)
-#	print("Encrypting request by user to register for organization: %s"%message)
-#	self.sendToOrg(crypto_functions.rsa_encrypt(message,self.registration_key),org)
-#	print("Sending encrypted request:%s"%org.recievedMessage)
-#	#org decrypts the message with their private key and handles the message
-#	#in this case, the user's request is for registration, and that will be done under the handleRequest method of the org
-#
-#	#store private key, AES key, and user's block id in the token
-#	#first get private key as plaintext
-#	f = open("privateKey.pem", "a+b")
-#	f.write(org.RSA_pvt_key.exportKey('PEM'))
-#    f.seek(0)
-#    RSA_pvt_key_str = f.read()
-#	print("Using RSA private key to decrypt request: %s"%RSA_pvt_key_str)
-#	f.close()
-#	#delete file after this to prevent key from being stored as a file
-#	os.remove("privateKey.pem")
-#	decrypted = crypto_functions.rsa_decrypt(org.recievedMessage,org.RSA_pvt_key)
-#	user_request = ast.literal_eval(decrypted) #convert message to dict
-#	org.handleRequest(user_request)
-	
  
 #function which encrypts data using AES
 def aes_encrypt(data,key):
@@ -330,30 +216,30 @@ def merkle(data):
 
 
 
-def check_auth(username, password):
-    return username == 'admin' and password == 'secret'
-
-def authenticate():
-    message = {'message':"Authenticate."}
-    
-    resp = jsonify(message)
-    resp.status_code = 401
-    resp.headers['WWW-Authenticate'] = 'Basic realm = "Example"'
-    
-    return resp
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated(*args,**kwargs):
-        auth = request.authorization
-        if not auth:
-            return authenticate()
-        
-        elif not check_auth(auth.username, auth.password):
-            return authenticate()
-        return f(*args, **kwargs)
-    
-    return decorated
+#def check_auth(username, password):
+#    return username == 'admin' and password == 'secret'
+#
+#def authenticate():
+#    message = {'message':"Authenticate."}
+#    
+#    resp = jsonify(message)
+#    resp.status_code = 401
+#    resp.headers['WWW-Authenticate'] = 'Basic realm = "Example"'
+#    
+#    return resp
+#
+#def requires_auth(f):
+#    @wraps(f)
+#    def decorated(*args,**kwargs):
+#        auth = request.authorization
+#        if not auth:
+#            return authenticate()
+#        
+#        elif not check_auth(auth.username, auth.password):
+#            return authenticate()
+#        return f(*args, **kwargs)
+#    
+#    return decorated
     
 
 if __name__ == "__main__":
