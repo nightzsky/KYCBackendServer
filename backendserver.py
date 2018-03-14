@@ -54,7 +54,7 @@ def register_kyc():
     
     #generate key
     AES_key = Random.new().read(32)
-    print type(AES_key)
+#    print type(AES_key)
     print("Generating AES key: %s"%AES_key)
 
     RSA_pvt_key = RSA.generate(2048)
