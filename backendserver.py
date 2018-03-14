@@ -122,7 +122,7 @@ def register_kyc():
         
         
         
-    resp = json.dumps(token)
+    resp = flask.Response(json.dumps(token))
     resp.status_code = 200
     print(resp)
         
