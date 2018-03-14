@@ -95,8 +95,8 @@ def register_kyc():
     r = requests.post("http://173.193.102.98:31090/api/User", data = jsonify(payload) ,headers = headers)
 #    r=requests.post("http://173.193.102.98:31090/api/User", data = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True},
 #                    headers = headers)
-    print r.status_code
-    print r.text
+    print(r.status_code)
+    print(r.text)
     #store private key, AES key, and user's block id in the token
     #first get private key as plaintext
     f = open("privateKey.pem", "a+b")
@@ -118,13 +118,13 @@ def register_kyc():
     token["block id"] = block_id
     token["merkle raw"] = merkles.decode("utf-8")
         
-    print token
+    print(token)
         
         
         
     resp = jsonify(token)
     resp.status_code = 200
-    print resp
+    print(resp)
         
         
     #post the data to the blockchain 
@@ -136,7 +136,7 @@ def register_kyc():
     #    print r.status_code
     #    print r.text
      
-    print "received data"
+    print("received data")
         
     languages.append(user_info)
     return resp
