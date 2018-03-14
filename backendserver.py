@@ -261,24 +261,28 @@ def register_kyc():
 def aes_encrypt(data,key):
 	#process data to become suitable for encryption by converting to bytes if needed
 	if type(data) != bytes:
-		data = bytes(data.encode("utf-8"))
-		
+		data = bytes(data, encoding = "utf8")
 	iv = Random.new().read(AES.block_size)
 	cipher = AES.new(key, AES.MODE_CFB,iv)
-
-	return iv+cipher.encrypt(data)
+	return str(list((iv+cipher.encrypt(data))))
 
 #function which decrypts data using AES
 def aes_decrypt(data,key):
+	if type(data) != bytes:
+		try:
+			data = bytes(ast.literal_eval(data))
+		except:
+			print("Error: could not interpret data for decryption")
+			return
 	iv = data[:16]
 	cipher = AES.new(key, AES.MODE_CFB, iv)
-	decrypted = cipher.decrypt(data[16:]).decode("utf-8")
+	decrypted = cipher.decrypt(data[16:]).decode()
 	return decrypted
 
 #function which encrypts data using RSA
 def rsa_encrypt(data, public_key):
 	if type(data) != bytes:
-		data = bytes(data.encode("utf-8"))
+		data = bytes(data, encoding = "utf8")
 	cipher = PKCS1_OAEP.new(public_key)
 	#hybrid encryption is used here as PKCS1_OAEP can only encrypt a very small amount of data
 	#to get around this, AES is used for the encryption of the data, and the AES key is encrypted using RSA
@@ -291,14 +295,14 @@ def rsa_encrypt(data, public_key):
 def rsa_decrypt(data, private_key):
 	cipher = PKCS1_OAEP.new(private_key)
 	#first decrypt the session key using RSA
-	session_key = cipher.decrypt(data[1]).decode("utf-8")
+	session_key = cipher.decrypt(data[1])
 	#then decrypt the data using AES and the session key
 	return aes_decrypt(data[0], session_key)
 
 
 #computes a SHA256 hash of the data
 def hash256(data):
-	data = bytes(data.encode("utf-8"))
+	data = bytes(data, encoding = "utf8")
 	hash_object = SHA256.new(data=data)
 	return hash_object.hexdigest()
 
@@ -323,6 +327,8 @@ def merkle(data):
 		temp.append(merkle(data[i:i+2]))
 
 	return merkle(temp)
+
+
 
 def check_auth(username, password):
     return username == 'admin' and password == 'secret'
