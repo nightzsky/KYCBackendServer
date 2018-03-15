@@ -169,7 +169,7 @@ def register_org():
     r = requests.get("http://173.193.102.98:31090/api/User/%s?access_token=IAKxrB59D9QWATWgBJqhJNK6f4rUEBu1YLjBjewoyOu8Ri6fE78OcnsFhFiM1qmX"%block_id)
     print(r.status_code)
     print(r.text)
-    resp = Response(json.dumps(ast.literal_eval(r.text)))
+    resp = Response(json.dumps(r.text))
     resp.status_code = 200
     print(resp)
 #    if (user_block_id == "12345"):
