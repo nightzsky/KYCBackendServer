@@ -67,6 +67,8 @@ def register_kyc():
     
         RSA_pvt_key = RSA.generate(2048)
         RSA_pub_key = RSA_pvt_key.publickey()
+        
+        block_id = hash256(user_info["id_number"])
             
         #create Merkle tree hash from user information, and add it to the dictionary
         merkle_raw = user_info.copy().values() #make a copy of the information used to create the merkle tree 
@@ -97,7 +99,7 @@ def register_kyc():
             
         #    block = Block(encrypted_user_info)
         #    print("block id: %d"%block.id)
-        block_id = hash256(user_info["id_number"])
+
     #    headers = {"Content-Type":"application/json"}
         #payload = {"$class": "org.acme.biznet.User","userId": block_id,"name": encrypted_user_info["name"],"userData": {"$class": "org.acme.biznet.UserData","name": encrypted_user_info["name"],"id": encrypted_user_info["id_number"],"postcode": encrypted_user_info["postal_code"],"birthdate": encrypted_user_info["dob"]},"access": True}
         payload = {
