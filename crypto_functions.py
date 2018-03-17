@@ -18,9 +18,9 @@ def aes_encrypt(data,key):
 def aes_decrypt(data,key):
     if type(data) != bytes:
         try:
-            print(data)
             data = bytes(ast.literal_eval(data))
-        except:
+        except Exception as e:
+            print(e)
             print("Error: could not interpret data for decryption")
             return
     iv = data[:16]
@@ -44,9 +44,13 @@ def rsa_encrypt(data, public_key):
 def rsa_decrypt(data, private_key):
     cipher = PKCS1_OAEP.new(private_key)
     #first decrypt the session key using RSA
+    if type(data[1] != bytes):
+        data[1] = bytes(data[1])
+    print("encrypted session key: %s"%list(data[1]))
     session_key = cipher.decrypt(data[1])
+    print("session key: %s"%list(session_key))
     #then decrypt the data using AES and the session key
-    return aes_decrypt(data[0], session_key)
+    return aes_decrypt(str(data[0]), session_key)
 
 
 #computes a SHA256 hash of the data
@@ -76,3 +80,11 @@ def merkle(data):
         temp.append(merkle(data[i:i+2]))
 
     return merkle(temp)
+
+#converts an int array of java bytes to an int array of python bytes
+def java_to_python_bytes(arr):
+    for i in range(len(arr)):
+        arr[i] = arr[i]%256
+    return arr
+
+
