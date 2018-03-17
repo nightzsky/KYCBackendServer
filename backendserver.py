@@ -138,7 +138,7 @@ def register_kyc():
         print("Storing RSA public key in user info")
         #add the public key to the user info
         user_info["public_key"] = RSA_pub_key_str
-        encrypted_user_info = encrypt_dict(user_info)
+        encrypted_user_info = encrypt_dict(user_info,AES_key)
         
         print("Encrypted user info: %s"%str(encrypted_user_info))
         print("Storing encrypted user info in block")
