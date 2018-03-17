@@ -51,7 +51,7 @@ def isValidPostCode(postcode):
 
 #Takes in a dictionary and checks if all the values are valid
 def isValidInput(inp):
-    if not (isValidName(inp["name"])) or not (isValidId(inp["id_number"])) or not (isValidDob(["dob"])) or not (isValidPostCode(["postal_code"])):
+    if not (isValidName(inp["name"])) or not (isValidId(inp["id_number"])) or not (isValidDob(inp["dob"])) or not (isValidPostCode(inp["postal_code"])):
         return False
 
     else:
