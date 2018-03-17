@@ -1,3 +1,5 @@
+import string 
+
 def isValidName(name):
     if type(name)!=str:
         return False
