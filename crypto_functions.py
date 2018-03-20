@@ -30,6 +30,9 @@ def aes_decrypt(data,key):
 
 #function which encrypts data using RSA
 def rsa_encrypt(data, public_key):
+    if type(public_key) == str:
+        public_key = RSA.importKey(public_key)
+        
     if type(data) != bytes:
         data = bytes(data, encoding = "utf8")
     cipher = PKCS1_OAEP.new(public_key)
@@ -42,6 +45,9 @@ def rsa_encrypt(data, public_key):
 
 #function which decrypts data using RSA
 def rsa_decrypt(data, private_key):
+    if type(private_key) == str:
+        private_key = RSA.importKey(private_key)
+
     cipher = PKCS1_OAEP.new(private_key)
     #first decrypt the session key using RSA
     if type(data[1] != bytes):

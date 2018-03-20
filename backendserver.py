@@ -34,7 +34,9 @@ def receiveInformation():
 def hello():    
     return jsonify({"languages":languages})
 
-#Randomly generates and returns an RSA public-private key pair as strings
+##
+# Randomly generates and returns an RSA public-private key pair as strings
+##
 def generate_rsa_key_pair():
     RSA_pvt_key = RSA.generate(2048)
     RSA_pub_key = RSA_pvt_key.publickey()
@@ -60,7 +62,9 @@ def generate_rsa_key_pair():
 
     return RSA_pub_key_str,RSA_pvt_key_str
 
-#Encrypts a python dictionary using AES and returns it
+##
+# Encrypts a python dictionary using AES and returns it
+##
 def encrypt_dict(raw, AES_key):
     encrypted = {}
     print("Encrypting user info:%s"%str(raw))
@@ -68,7 +72,9 @@ def encrypt_dict(raw, AES_key):
         encrypted[key] = aes_encrypt(raw[key], AES_key)
     return encrypted
 
-#Creates a new user in the hyperledger blockchain
+##
+# Creates a new user in the hyperledger blockchain
+##
 def new_user_blockchain(block_id, encrypted_info):
     payload = {
       "$class": "org.acme.biznet.User",
@@ -95,6 +101,22 @@ def new_user_blockchain(block_id, encrypted_info):
     else:
         print("New user %s successfully created in blockchain."%block_id)
 
+##
+# This function decrypts an incoming HTTP request using the RSA private key
+# All requests will be encrypted using the RSA public key, so all requests will have to be decrypted before they are processed
+# Specifically, this function will decrypt the json parameter of the request
+##
+
+def decrypt_request(json):
+    private_key = os.environ["PRIVATE_KEY"]
+    decrypted = {}
+    for key in json:
+        if type(json[key]) == dict:
+            json[rsa_decrypt(key,private_key)] = decrypt_request(json[key])
+        else:
+            json[rsa_decrypt(key,private_key)] = rsa_decrypt(json[key], private_key)
+
+    return decrypted
 
 @app.route("/register_kyc", methods = ['POST'])
 def register_kyc():  
@@ -188,10 +210,14 @@ def register_org():
     
     return resp
 
- 
-
-
-
+ ##
+ # This function returns the public key for the KYC backend
+ # Anyone can use a GET method on this url to obtain the public key
+ # They can then use this public key to encrypt their requests
+ ##
+ @app.route("/getkey", methods = ['GET'])
+ def get_key():
+    return os.environ["PUB_KEY"]
 
 
 
