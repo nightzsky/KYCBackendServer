@@ -112,9 +112,9 @@ def decrypt_request(json):
     decrypted = {}
     for key in json:
         if type(json[key]) == dict:
-            json[rsa_decrypt(key,private_key)] = decrypt_request(json[key])
+            decrypted[rsa_decrypt(ast.literal_eval(key),private_key)] = decrypt_request(json[key])
         else:
-            json[rsa_decrypt(key,private_key)] = rsa_decrypt(json[key], private_key)
+            decrypted[rsa_decrypt(ast.literal_eval(key),private_key)] = rsa_decrypt(ast.literal_eval(json[key]), private_key)
 
     return decrypted
 
