@@ -108,7 +108,7 @@ def new_user_blockchain(block_id, encrypted_info):
 ##
 
 def decrypt_request(json):
-    private_key = os.environ["PRIVATE_KEY"]
+    private_key = os.environ["PRIVATE_KEY"].replace("\\n","\n")
     decrypted = {}
     for key in json:
         if type(json[key]) == dict:
@@ -218,7 +218,7 @@ def register_org():
  ##
 @app.route("/getkey", methods = ['GET'])
 def get_key():
-    return os.environ["PUB_KEY"]
+    return os.environ["PUB_KEY"].replace("\\n","\n")
 
 
 
