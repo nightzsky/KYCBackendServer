@@ -215,8 +215,8 @@ def register_org():
  # Anyone can use a GET method on this url to obtain the public key
  # They can then use this public key to encrypt their requests
  ##
- @app.route("/getkey", methods = ['GET'])
- def get_key():
+@app.route("/getkey", methods = ['GET'])
+def get_key():
     return os.environ["PUB_KEY"]
 
 
