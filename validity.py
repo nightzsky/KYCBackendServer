@@ -1,22 +1,51 @@
-import string 
+import string
+import datetime
 
+# precondition: alphanumerics with '.', '-', and ',' allowed
 def isValidName(name):
     if type(name)!=str:
         return False
     for letter in name:
-        if letter.isdigit() or letter in string.punctuation:
+        if letter.isdigit() or letter in """!"#$%&()*+/:;<=>?@[\]^_`{|}~""":
             return False
     return True
 
-def isValidId(idee):
-    if type(idee) != str:
+# precondition: 9 character string, alphas in caps
+def isValidId(nric):
+    # check string of length 9
+    if type(nric) != str:
         return False
-    for letter in idee:
-        if not letter.isalnum():
-            return False
-    return True
+    if (len(nric)!=9 or not nric[1:8].isdigit()):
+        return False
 
+    # check prefix
+    if nric[0] not in "STFG":
+        return False
+
+    # verify checksum
+    weight = [2,7,6,5,4,3,2]
+    st_alphas = "ABCDEFGHIZJ"
+    fg_alphas = "KLMNPQRTUWX"
+    product_sum = 0
+    offset = 4 if (nric[0] == "T" or nric[0] == "G") else 0
+    for i in range(1,8):
+        product_sum += int(nric[i])*(weight[i-1])
+    suffix_index = (11-offset-product_sum%11)-1
+    if (nric[0] == "S" or nric[0] == "T"):
+        if (nric[8]==st_alphas[suffix_index]):
+            return True
+        return False
+    elif (nric[0] == "F" or nric[0] == "G"):
+        if (nric[8]==fg_alphas[suffix_index]):
+            return True
+        return False
+    return False
+
+# precondition: DD/MM/YYYY
 def isValidDob(dob):
+    if (type(dob) != str):
+        return False
+    leap_year = False
     split = dob.split("/")
     if len(split) != 3:
         return False
@@ -25,24 +54,37 @@ def isValidDob(dob):
             return False
     if len(split[0]) != 2 or len(split[1]) != 2 or len(split[2])!= 4:
         return False
-
     if int(split[1]) > 12 or int(split[1]) == 0:
         return False
-
+    # check if input date exceeds current date
+    try:
+        if (datetime.datetime(int(split[2]),int(split[1]),int(split[0])) > datetime.datetime.now()):
+            return False
+    except:
+        return False
+    if (int(split[2]) % 4 == 0 and (int(split[2]) % 100 != 0 or int(split[2]) % 400 == 0)):
+        leap_year = True
+        
     long_months = ['01', '03', '05', '07', '08', '10', '12']
     short_months = ['04', '06', '09', '11']
 
-
-    if split[1] == '02' and int(split[0]) > 29:
+    # if Feb > 28 on normal year, return false
+    if split[1] == '02' and not leap_year and int(split[0]) > 28:
+        return False
+    # if Feb > 29 on leap year, return false
+    elif split[1] == '02' and leap_year and int(split[0]) > 29:
         return False
     elif split[1] in long_months and int(split[0]) > 31:
         return False
     elif split[1] in short_months and int(split[0]) > 31:
         return False
-
     return True
 
+# precondition: 6 digits
 def isValidPostCode(postcode):
+    # Postcode 74XXXX or 82XXXX-99XXXX does not exist
+    if (postcode[0:2] == "74" or int(postcode[0:2]) > 82):
+        return False
     if len(postcode) != 6:
         return False
     if not postcode.isdigit():
