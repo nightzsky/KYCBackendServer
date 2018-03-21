@@ -18,7 +18,7 @@ def aes_encrypt(data,key):
 def aes_decrypt(data,key):
     if type(data) != bytes:
         try:
-            data = bytes(ast.literal_eval(data))
+            data = bytes(java_to_python_bytes(ast.literal_eval(data)))
         except Exception as e:
             print(e)
             print("Error: could not interpret data for decryption")
@@ -49,7 +49,7 @@ def rsa_decrypt(data, private_key):
         private_key = RSA.importKey(private_key)
 
     if type(data) == str:
-        data = ast.literal_eval(data)
+        data = ast.literal_eval(java_to_python_bytes(data))
         
     cipher = PKCS1_OAEP.new(private_key)
     #first decrypt the session key using RSA
