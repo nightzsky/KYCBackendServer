@@ -129,7 +129,7 @@ def register_kyc():
     dob = decrypted["dob"]
     
     #check if the info is valid
-    if not isValidInput(request.json):
+    if not isValidInput(decrypted):
         resp = Response(json.dumps({"message":"invalid input"}))
         resp.status_code = 400
         return resp
