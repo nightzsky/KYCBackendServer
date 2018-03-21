@@ -91,7 +91,8 @@ def new_user_blockchain(block_id, encrypted_info):
       "access": True
     }
       
-    #post it to hyperledger      
+    #post it to hyperledger
+    print("Token: %s"%os.environ['BLOCKCHAIN_TOKEN'])      
     r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload)
 
     if r.status_code != 200:
