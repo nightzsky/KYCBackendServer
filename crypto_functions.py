@@ -96,4 +96,12 @@ def java_to_python_bytes(arr):
         arr[i] = arr[i]%256
     return arr
 
+#Encrypts a http request to be sent to the backend servers using an RSA public key
+def encrypt_request(req, pub_key):
+    encrypted = {}
+    for i in req:
+        if type(req[i]) == dict:
+            encrypted[str(rsa_encrypt(i,pub_key))] = encrypt_request(req)
+        encrypted[str(rsa_encrypt(i,pub_key))] = str(rsa_encrypt(req[i], pub_key))
+    return encrypted
 
