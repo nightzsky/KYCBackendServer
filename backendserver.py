@@ -109,6 +109,7 @@ def new_user_blockchain(block_id, encrypted_info):
 
 def decrypt_request(json):
     private_key = os.environ["PRIVATE_KEY"].replace("\\n","\n")
+    print(private_key)
     decrypted = {}
     for key in json:
         if type(json[key]) == dict:
