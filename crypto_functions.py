@@ -54,7 +54,7 @@ def rsa_decrypt(data, private_key):
     cipher = PKCS1_OAEP.new(private_key)
     #first decrypt the session key using RSA
     if type(data[1] != bytes):
-        data[1] = bytes(data[1])
+        data[1] = bytes(java_to_python_bytes(data[1]))
     print("encrypted session key: %s"%list(data[1]))
     session_key = cipher.decrypt(data[1])
     print("session key: %s"%list(session_key))
