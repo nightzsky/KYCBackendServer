@@ -92,7 +92,7 @@ def new_user_blockchain(block_id, encrypted_info):
     }
       
     #post it to hyperledger      
-    r = requests.post("http://173.193.102.98:31090/api/User?access_token=IAKxrB59D9QWATWgBJqhJNK6f4rUEBu1YLjBjewoyOu8Ri6fE78OcnsFhFiM1qmX", json = payload)
+    r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload)
 
     if r.status_code != 200:
         print("Error in creating new user in blockchain: request returned %d"%r.status_code)
@@ -109,7 +109,6 @@ def new_user_blockchain(block_id, encrypted_info):
 
 def decrypt_request(json):
     private_key = os.environ["PRIVATE_KEY"].replace("\\n","\n")
-    print(private_key)
     decrypted = {}
     for key in json:
         if type(json[key]) == dict:
