@@ -129,11 +129,15 @@ def decrypt_request(json):
 @app.route("/register_kyc", methods = ['POST'])
 def register_kyc():  
     #retrieve data
-    decrypted = decrypt_request(request.json)
-    name = decrypted["name"]
-    postal_code = decrypted["postal_code"]
-    id_number = decrypted["id_number"]
-    dob = decrypted["dob"]
+#    decrypted = decrypt_request(request.json)
+#    name = decrypted["name"]
+#    postal_code = decrypted["postal_code"]
+#    id_number = decrypted["id_number"]
+#    dob = decrypted["dob"]
+    name = request.json["name"]
+    postal_code = request.json["postal_code"]
+    id_number = request.json["id_number"]
+    dob = request.json["dob"]
     
     #check if the info is valid
     if not isValidInput(decrypted):
