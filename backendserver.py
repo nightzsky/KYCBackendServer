@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Mar 08 20:17:09 2018
-
 @author: Nightzsky
 """
 
@@ -219,7 +218,8 @@ def register_org():
     block_id = request.json["block_id"]
     
     #get the corresponding encrypted user info from the block
-    r = requests.get("http://173.193.102.98:31090/api/User/%s?access_token=IAKxrB59D9QWATWgBJqhJNK6f4rUEBu1YLjBjewoyOu8Ri6fE78OcnsFhFiM1qmX"%block_id)
+    token = os.environ['BLOCKCHAIN_TOKEN']
+    r = requests.get("http://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token))
     print(r.status_code)
     print(r.text)
     
