@@ -133,17 +133,7 @@ def register_kyc():
     postal_code = decrypted["postal_code"]
     id_number = decrypted["id_number"]
     dob = decrypted["dob"]
-#    decrypted = {}
-#    name = request.json["name"]
-#    postal_code = request.json["postal_code"]
-#    id_number = request.json["id_number"]
-#    dob = request.json["dob"]
-    
-#    decrypted["name"]= name
-#    decrypted["postal_code"] = postal_code
-#    decrypted["id_number"] = id_number
-#    decrypted["dob"] = dob
-    #check if the info is valid
+
     if not isValidInput(decrypted):
         resp = Response(json.dumps({"message":"invalid input"}))
         resp.status_code = 400
