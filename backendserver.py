@@ -121,7 +121,7 @@ def decrypt_request(json):
 #        if type(json[key]) == dict:
 #            decrypted[rsa_decrypt(java_to_python_bytes(key),private_key)] = decrypt_request(json[key])
 #        else:
-        decrypted[rsa_decrypt(java_to_python_bytes(key),private_key)] = rsa_decrypt(java_to_python_bytes(json[key]), private_key)
+        decrypted[rsa_decrypt(key,private_key)] = rsa_decrypt(json[key], private_key)
 
     return decrypted
 
