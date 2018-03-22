@@ -108,4 +108,3 @@ def encrypt_request(req, pub_key):
             encrypted[str(rsa_encrypt(i,pub_key))] = encrypt_request(req)
         encrypted[str(rsa_encrypt(i,pub_key))] = str(rsa_encrypt(req[i], pub_key))
     return encrypted
-
