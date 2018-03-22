@@ -118,17 +118,20 @@ def decrypt_request(json):
     private_key = os.environ["PRIVATE_KEY"].replace("\\n","\n")
     decrypted = {}
     for key in json:
-        if type(json[key]) == dict:
-            decrypted[rsa_decrypt(java_to_python_bytes(key),private_key)] = decrypt_request(java_to_python_bytes(json[key]))
-        else:
-            decrypted[rsa_decrypt(java_to_python_bytes(key),private_key)] = rsa_decrypt(java_to_python_bytes(json[key]), private_key)
+#        if type(json[key]) == dict:
+#            decrypted[rsa_decrypt(java_to_python_bytes(key),private_key)] = decrypt_request(json[key])
+#        else:
+        decrypted[rsa_decrypt(java_to_python_bytes(key),private_key)] = rsa_decrypt(java_to_python_bytes(json[key]), private_key)
 
     return decrypted
 
 @app.route("/register_kyc", methods = ['POST'])
 def register_kyc():  
     #retrieve data
+    
+    print(request.json)
     decrypted = decrypt_request(request.json)
+
     name = decrypted["name"]
     postal_code = decrypted["postal_code"]
     id_number = decrypted["id_number"]
