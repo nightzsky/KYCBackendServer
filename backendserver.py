@@ -91,14 +91,19 @@ def new_user_blockchain(block_id, encrypted_info):
       "access": True
     }
       
-    #post it to hyperledger
-    token = os.environ['BLOCKCHAIN_TOKEN'] 
-    r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%token, json = payload)
+    #post it to hyperledger      
+    r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload)
+#    #post it to hyperledger
+#    token = os.environ['BLOCKCHAIN_TOKEN'] 
+#    r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%token, json = payload)
 
     if r.status_code != 200:
         print("Error in creating new user in blockchain: request returned %d"%r.status_code)
         print("Request response: %s"%r.text)
-        return False
+    
+#    else:
+#        print("New user %s successfully created in blockchain."%block_id)
+#        return False
     
     else:
         print("New user %s successfully created in blockchain."%block_id)
@@ -171,6 +176,7 @@ def register_kyc():
         
         #get block id for hyperledger for user, post to hyperledger
         block_id = hash256(user_info["id_number"])
+        new_user_blockchain(block_id, encrypted_user_info)
         new_user_success = new_user_blockchain(block_id, encrypted_user_info)
 
         #stop execution if user was not successfully created in blockchain
