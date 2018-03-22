@@ -131,6 +131,7 @@ def register_kyc():
     
     print(request.json)
     decrypted = decrypt_request(request.json)
+    print(decrypted)
 
     name = decrypted["name"]
     postal_code = decrypted["postal_code"]
