@@ -138,11 +138,11 @@ def register_kyc():
     id_number = decrypted["id_number"]
     dob = decrypted["dob"]
 
-    if not isValidInput(decrypted):
-        resp = Response(json.dumps({"message":"invalid input"}))
-        resp.status_code = 400
-        return resp
-    
+#    if not isValidInput(decrypted):
+#        resp = Response(json.dumps({"message":"invalid input"}))
+#        resp.status_code = 400
+#        return resp
+#    
     else:
         #create a new dictionary for user_info
         user_info = {}  
