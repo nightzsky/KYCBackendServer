@@ -142,6 +142,9 @@ def register_kyc():
 #        resp = Response(json.dumps({"message":"invalid input"}))
 #        resp.status_code = 400
 #        return resp
+    happy = False
+    if (happy):
+        name = "hi"
 #    
     else:
         #create a new dictionary for user_info
