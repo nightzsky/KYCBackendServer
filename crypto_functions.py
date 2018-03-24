@@ -51,8 +51,12 @@ def rsa_decrypt(data, private_key):
 
     if type(data) == str:
         data = ast.literal_eval(data)
-        data = ast.literal_eval(java_to_python_bytes(data))
-        
+    if type(data[0] == list):
+        data[0] = java_to_python_bytes(data[0])
+
+    if type(data[1] == list):
+        data[1] = java_to_python_bytes(data[1]) 
+
     cipher = PKCS1_OAEP.new(private_key)
     #first decrypt the session key using RSA
     if type(data[1] != bytes):
@@ -61,7 +65,7 @@ def rsa_decrypt(data, private_key):
     session_key = cipher.decrypt(data[1])
     print("session key: %s"%list(session_key))
     data[1] = bytes(data[1])
-    session_key = cipher.decrypt(java_to_python_bytes(data[1]))
+    session_key = cipher.decrypt(data[1])
     #then decrypt the data using AES and the session key
     return aes_decrypt(str(data[0]), session_key)
 
