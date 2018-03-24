@@ -138,11 +138,14 @@ def register_kyc():
     id_number = decrypted["id_number"]
     dob = decrypted["dob"]
 
-    if not isValidInput(decrypted):
-        resp = Response(json.dumps({"message":"invalid input"}))
-        resp.status_code = 400
-        return resp
-    
+#    if not isValidInput(decrypted):
+#        resp = Response(json.dumps({"message":"invalid input"}))
+#        resp.status_code = 400
+#        return resp
+    happy = False
+    if (happy):
+        name = "hi"
+#    
     else:
         #create a new dictionary for user_info
         user_info = {}  
@@ -178,7 +181,7 @@ def register_kyc():
         
         #get block id for hyperledger for user, post to hyperledger
         block_id = hash256(user_info["id_number"])
-        new_user_blockchain(block_id, encrypted_user_info)
+      #  new_user_blockchain(block_id, encrypted_user_info)
         new_user_success = new_user_blockchain(block_id, encrypted_user_info)
 
         #stop execution if user was not successfully created in blockchain
