@@ -194,7 +194,7 @@ def register_kyc():
         #generate a token for the user and store the info inside it
         token = {}
         token["private_key"] = RSA_pvt_key_str.decode("utf-8")
-        token["AES_key"] = AES_key.decode("cp437")
+        token["AES_key"] = str(list(AES_key))
         token["block_id"] = block_id
         token["merkle_raw"] = merkles
             
