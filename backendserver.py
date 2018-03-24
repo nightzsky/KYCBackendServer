@@ -178,7 +178,7 @@ def register_kyc():
         
         #get block id for hyperledger for user, post to hyperledger
         block_id = hash256(user_info["id_number"])
-        new_user_blockchain(block_id, encrypted_user_info)
+      #  new_user_blockchain(block_id, encrypted_user_info)
         new_user_success = new_user_blockchain(block_id, encrypted_user_info)
 
         #stop execution if user was not successfully created in blockchain
