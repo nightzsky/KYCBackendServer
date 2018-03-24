@@ -19,7 +19,6 @@ def aes_decrypt(data,key):
     if type(data) != bytes:
         try:
             data = bytes(ast.literal_eval(data))
-            data = bytes(java_to_python_bytes(ast.literal_eval(data)))
         except Exception as e:
             print(e)
             print("Error: could not interpret data for decryption")
