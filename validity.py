@@ -77,6 +77,7 @@ def isValidDob(dob):
         return False
     if (int(split[2]) % 4 == 0 and (int(split[2]) % 100 != 0 or int(split[2]) % 400 == 0)):
         leap_year = True
+    print(leap_year)
         
     long_months = ['01', '03', '05', '07', '08', '10', '12']
     short_months = ['04', '06', '09', '11']
@@ -118,3 +119,5 @@ def isValidInput(inp):
 
     else:
         return True
+
+print(isValidDob("29/02/1995"))
