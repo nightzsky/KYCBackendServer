@@ -16,6 +16,8 @@ def aes_encrypt(data,key):
 
 #function which decrypts data using AES
 def aes_decrypt(data,key):
+    if type(key) != bytes:
+        key = bytes(ast.literal_eval(key))
     if type(data) != bytes:
         try:
             data = bytes(ast.literal_eval(data))
@@ -68,7 +70,6 @@ def rsa_decrypt(data, private_key):
     #then decrypt the data using AES and the session key
     return aes_decrypt(str(data[0]), session_key)
 
-
 #computes a SHA256 hash of the data
 def hash256(data):
     data = bytes(data, encoding = "utf8")
@@ -99,10 +100,19 @@ def merkle(data):
 
 #converts an int array of java bytes to an int array of python bytes
 def java_to_python_bytes(arr):
-    for i in range(len(arr)):
-        arr[i] = arr[i]%256
+    if type(arr) == str:
+        arr = ast.literal_eval(arr)
 
-    return arr
+    if type(arr) == list:
+        for i in range(len(arr)):
+            if type(arr[i]) == list:
+                arr[i] = java_to_python_bytes(arr[i])
+            else:
+                arr[i] = arr[i]%256
+            
+        return arr
+    else:
+        raise ValueError("Input must be an array or string representation of an array")
 
 #Encrypts a http request to be sent to the backend servers using an RSA public key
 def encrypt_request(req, pub_key):
@@ -112,3 +122,5 @@ def encrypt_request(req, pub_key):
             encrypted[str(rsa_encrypt(i,pub_key))] = encrypt_request(req)
         encrypted[str(rsa_encrypt(i,pub_key))] = str(rsa_encrypt(req[i], pub_key))
     return encrypted
+
+
