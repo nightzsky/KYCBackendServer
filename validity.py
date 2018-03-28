@@ -100,7 +100,7 @@ def isValidDob(dob):
 
 # precondition: 6 digits
 def isValidPostCode(postcode):
-    # Postcode 74XXXX or 82XXXX-99XXXX does not exist
+    # Postcode 74XXXX or 83XXXX-99XXXX does not exist
     if (postcode[0:2] == "74" or int(postcode[0:2]) > 82):
         print("Postcode not valid")
         return False
@@ -120,4 +120,3 @@ def isValidInput(inp):
     else:
         return True
 
-print(isValidDob("29/02/1995"))
