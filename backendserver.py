@@ -6,13 +6,8 @@ Created on Thu Mar 08 20:17:09 2018
 
 
 languages = [{'block_id':'user_info'}]
-users = {}
-orgs = {}
 
 from flask import Flask,jsonify,request,Response
-#from __future__ import print_function
-#import sys
-#import demo
 from crypto_functions import *
 import base64
 import json
@@ -92,17 +87,10 @@ def new_user_blockchain(block_id, encrypted_info):
       
     #post it to hyperledger      
     r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload)
-#    #post it to hyperledger
-#    token = os.environ['BLOCKCHAIN_TOKEN'] 
-#    r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%token, json = payload)
 
     if r.status_code != 200:
         print("Error in creating new user in blockchain: request returned %d"%r.status_code)
         print("Request response: %s"%r.text)
-    
-#    else:
-#        print("New user %s successfully created in blockchain."%block_id)
-#        return False
     
     else:
         print("New user %s successfully created in blockchain."%block_id)
@@ -142,6 +130,7 @@ def register_kyc():
 #        resp = Response(json.dumps({"message":"invalid input"}))
 #        resp.status_code = 400
 #        return resp
+    
     happy = False
     if (happy):
         name = "hi"
@@ -181,7 +170,6 @@ def register_kyc():
         
         #get block id for hyperledger for user, post to hyperledger
         block_id = hash256(user_info["id_number"])
-      #  new_user_blockchain(block_id, encrypted_user_info)
         new_user_success = new_user_blockchain(block_id, encrypted_user_info)
 
         #stop execution if user was not successfully created in blockchain
@@ -191,7 +179,6 @@ def register_kyc():
             return resp
         
         #store private key, AES key, and user's block id in the token
-       
         #create the token object, and assign it to the user who is registering
         print("Storing RSA private key, AES key, block ID and information used to compute merkle root in token")
         #generate a token for the user and store the info inside it
