@@ -131,10 +131,6 @@ def register_kyc():
         resp.status_code = 400
         return resp
     
-    happy = False
-    if (happy):
-        name = "hi"
-#    
     else:
         #create a new dictionary for user_info
         user_info = {}  
@@ -212,12 +208,19 @@ def register_org():
     print(r.status_code)
     print(r.text)
     
-    #post the encrypted user info back to the companybackend
-    resp = Response(json.dumps(json.loads(r.text)))
-    resp.status_code = 200
-    print(resp)
+    if (r.status_code == 200): # if success in retreiving the user info from blockchain
+        #post the encrypted user info back to the companybackend
+        resp = Response(json.dumps(json.loads(r.text)))
+        resp.status_code = 200
+        print(resp)
+        
+        return resp
     
-    return resp
+    else: # if fail to retrieve the user_info from blockchain
+        resp = Response(json.dumps({"Error":"Failed to retrieve user info/User does not exist."}))
+        resp.status_code = 500
+        
+        return resp
 
  ##
  # This function returns the public key for the KYC backend
