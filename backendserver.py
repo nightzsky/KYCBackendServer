@@ -86,7 +86,7 @@ def new_user_blockchain(block_id, encrypted_info):
     }
       
     #post it to hyperledger      
-    r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload)
+    r = requests.post("http://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
 
     if r.status_code != 200:
         print("Error in creating new user in blockchain: request returned %d"%r.status_code)
@@ -207,7 +207,7 @@ def register_org():
     
     #get the corresponding encrypted user info from the block
     token = os.environ['BLOCKCHAIN_TOKEN']
-    r = requests.get("http://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token))
+    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
     print(r.status_code)
     print(r.text)
     
