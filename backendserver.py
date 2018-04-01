@@ -32,7 +32,7 @@ def hello():
 # Randomly generates and returns an RSA public-private key pair as strings
 ##
 def generate_rsa_key_pair():
-    RSA_pvt_key = RSA.generate(2048, pcks = 8)
+    RSA_pvt_key = RSA.generate(2048, pkcs = 8)
     RSA_pub_key = RSA_pvt_key.publickey()
 
     #write key to a file then read the same file to obtain the key in plaintext
