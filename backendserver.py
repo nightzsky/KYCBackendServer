@@ -47,7 +47,7 @@ def generate_rsa_key_pair():
 
     #Do the same for private key
     f = open("privateKey.pem", "a+b")
-    f.write(RSA_pvt_key.exportKey('PEM'))
+    f.write(RSA_pvt_key.exportKey('PEM', pkcs = 8))
     f.seek(0)
     RSA_pvt_key_str = f.read()
     print("Generating RSA private key: %s"%RSA_pvt_key_str)
