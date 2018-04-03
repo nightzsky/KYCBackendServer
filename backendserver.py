@@ -17,8 +17,37 @@ import os
 import ast
 from functools import wraps
 from validity import isValidInput
-app = Flask(__name__)
+from flask_basicauth import BasicAuth
 
+app = Flask(__name__)
+#
+#app.config['BASIC_AUTH_USERNAME'] = 'kycesc'
+#app.config['BASIC_AUTH_PASSWORD'] = '4members'
+
+def check_auth(username, password):
+    return username == 'admin' and password == 'secret'
+
+def authenticate():
+    message = {'message':"Authenticate."}
+    
+    resp = jsonify(message)
+    resp.status_code = 401
+    resp.headers['WWW-Authenticate'] = 'Basic realm = "Example"'
+    
+    return resp
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args,**kwargs):
+        auth = request.authorization
+        if not auth:
+            return authenticate()
+        
+        elif not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    
+    return decorated
 
 @app.route("/")
 def receiveInformation():
@@ -146,6 +175,7 @@ def decrypt_request(json):
     return decrypted
 
 @app.route("/register_kyc", methods = ['POST'])
+@requires_auth
 def register_kyc():  
     #retrieve data 
     print(request.json)
@@ -312,6 +342,7 @@ def update_token():
  # They can then use this public key to encrypt their requests
  ##
 @app.route("/getkey", methods = ['GET'])
+
 def get_key():
     return os.environ["PUB_KEY"].replace("\\n","\n")
 
