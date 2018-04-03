@@ -72,7 +72,7 @@ def get_user_from_blockchain(block_id):
     r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
     print(r.status_code)
     print(r.text)
-    return json.loads(r.text)
+    return r.status_code,json.loads(r.text)
 
 ##
 # Creates a new user in the hyperledger blockchain
@@ -237,9 +237,9 @@ def register_org():
     block_id = request.json["block_id"]
     
     #get the corresponding encrypted user info from the block
-    encrypted_info = get_user_from_blockchain(block_id)
+    status_code,encrypted_info = get_user_from_blockchain(block_id)
     
-    if (r.status_code == 200): # if success in retreiving the user info from blockchain
+    if (status_code == 200): # if success in retreiving the user info from blockchain
         #post the encrypted user info back to the companybackend
         resp = Response(json.dumps(encrypted_info))
         resp.status_code = 200
@@ -269,37 +269,42 @@ def update_token():
 #    print(r.status_code)
 #    print(r.text)
     
-    userData = get_user_from_blockchain(block_id)
-    userData = userData["userData"]
-    del userData["$class"]
-    print(userData)
-           
-    #decrpyt the user data with AES key
-    for key in userData:
-        print("decrypting %s now"%key)
-        userData[key] = aes_decrypt(userData[key],old_AES_key)
-    print(userData)
-    
-    #generate AES key for the user
-    new_AES_key = Random.new().read(32)
-    print("Generating AES key: %s"%new_AES_key)
-    
-    encrypted_user_info = encrypt_dict(userData,new_AES_key)
+    status_code,userData = get_user_from_blockchain(block_id)
+    if (status_code == 200):  
+        userData = userData["userData"]
+        del userData["$class"]
+        print(userData)
+               
+        #decrpyt the user data with AES key
+        for key in userData:
+            print("decrypting %s now"%key)
+            userData[key] = aes_decrypt(userData[key],old_AES_key)
+        print(userData)
         
-    print("Encrypted user info: %s"%str(encrypted_user_info))
-    print("Storing encrypted user info in block")
-    
-    update_user_success = update_user_blockchain(block_id,encrypted_user_info)
-    
-    if not update_user_success:
-        resp = Response(json.dumps({"Error":"Fail to update the blockchain."}))
-        resp.status_code = 500
+        #generate AES key for the user
+        new_AES_key = Random.new().read(32)
+        print("Generating AES key: %s"%new_AES_key)
+        
+        encrypted_user_info = encrypt_dict(userData,new_AES_key)
+            
+        print("Encrypted user info: %s"%str(encrypted_user_info))
+        print("Storing encrypted user info in block")
+        
+        update_user_success = update_user_blockchain(block_id,encrypted_user_info)
+        
+        if not update_user_success:
+            resp = Response(json.dumps({"Error":"Fail to update the blockchain."}))
+            resp.status_code = 500
+            return resp
+        
+        resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
+        resp.status_code = 200
+        
         return resp
-    
-    resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
-    resp.status_code = 200
-    
-    return resp
+    else:
+        resp = Response(json.dumps({"Error":"Failed to retrieve user data"}))
+        resp.status_code = 400
+        return resp
 
  ##
  # This function returns the public key for the KYC backend
