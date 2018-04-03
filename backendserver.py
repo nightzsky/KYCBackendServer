@@ -112,8 +112,7 @@ def update_user_blockchain(block_id, encrypted):
             }
             
     #post it to hyperledger
-    r = requests.post("https://173.193.102.98:31090/api/updateUserEncryptedData/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
-    
+    r = requests.post("https://173.193.102.98:31090/api/updateUserEncryptedData?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
     if r.status_code != 200:
         print("Error in updating user in blockchain: request returned %d"%r.status_code)
         print("Request response: %s"%r.text)
@@ -261,6 +260,7 @@ def update_token():
     #get the corresponding encrypted user info from the block
     token = os.environ['BLOCKCHAIN_TOKEN']
     r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
+    print("out")
     print(r.status_code)
     print(r.text)
     
@@ -284,12 +284,6 @@ def update_token():
     print("Encrypted user info: %s"%str(encrypted_user_info))
     print("Storing encrypted user info in block")
     
-#    #encrypt the userData with new AES_key
-#    new_encrypted_userData = encrypt_dict(userData,new_AES_key)
-#        
-#    print("Encrypted user info: %s"%str(new_encrypted_userData))
-#    print("Storing encrypted user info in block")
-        
     update_user_success = update_user_blockchain(block_id,encrypted_user_info)
     
     if not update_user_success:
@@ -299,6 +293,12 @@ def update_token():
     
     resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
     resp.status_code = 200
+    
+    print("new")
+    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
+    print(r.status_code)
+    print(r.text)
+    
     return resp
 
  ##
