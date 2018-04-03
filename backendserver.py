@@ -279,7 +279,7 @@ def update_token():
     new_AES_key = Random.new().read(32)
     print("Generating AES key: %s"%new_AES_key)
     
-    encrypted_user_info = encrypt_dict(userData,AES_key)
+    encrypted_user_info = encrypt_dict(userData,new_AES_key)
         
     print("Encrypted user info: %s"%str(encrypted_user_info))
     print("Storing encrypted user info in block")
