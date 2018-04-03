@@ -4,9 +4,6 @@ Created on Thu Mar 08 20:17:09 2018
 @author: Nightzsky
 """
 
-
-languages = [{'block_id':'user_info'}]
-
 from flask import Flask,jsonify,request,Response
 from crypto_functions import *
 import base64
@@ -17,13 +14,12 @@ import os
 import ast
 from functools import wraps
 from validity import isValidInput
-#from flask_basicauth import BasicAuth
 
 app = Flask(__name__)
-#
-#app.config['BASIC_AUTH_USERNAME'] = 'admin'
-#app.config['BASIC_AUTH_PASSWORD'] = 'secret'
 
+##
+# For Authentication
+##
 def check_auth(username, password):
     return username == 'admin' and password == 'secret'
 
@@ -48,14 +44,6 @@ def requires_auth(f):
         return f(*args, **kwargs)
     
     return decorated
-
-@app.route("/")
-def receiveInformation():
-    return "bye"
-
-@app.route("/lang")
-def hello():    
-    return jsonify({"languages":languages})
 
 ##
 # Randomly generates and returns an RSA public-private key pair as strings
@@ -95,6 +83,9 @@ def encrypt_dict(raw, AES_key):
         encrypted[key] = aes_encrypt(raw[key], AES_key)
     return encrypted
 
+##
+# Methods about blockchain: get user data from blockchain, add new user to blockchain and update existing user data
+##
 def get_user_from_blockchain(block_id):
     #get the corresponding encrypted user info from the block
     token = os.environ['BLOCKCHAIN_TOKEN']
@@ -162,7 +153,6 @@ def update_user_blockchain(block_id, encrypted):
 # All requests will be encrypted using the RSA public key, so all requests will have to be decrypted before they are processed
 # Specifically, this function will decrypt the json parameter of the request
 ##
-
 def decrypt_request(json):
     private_key = os.environ["PRIVATE_KEY"].replace("\\n","\n")
     decrypted = {}
@@ -174,6 +164,9 @@ def decrypt_request(json):
 
     return decrypted
 
+##
+# For new user to register an account in KYC
+##
 @app.route("/register_kyc", methods = ['POST'])
 @requires_auth
 def register_kyc():  
@@ -241,6 +234,7 @@ def register_kyc():
         #store private key, AES key, and user's block id in the token
         #create the token object, and assign it to the user who is registering
         print("Storing RSA private key, AES key, block ID and information used to compute merkle root in token")
+       
         #generate a token for the user and store the info inside it
         token = {}
         token["private_key"] = RSA_pvt_key_str.decode("utf-8")
@@ -254,13 +248,14 @@ def register_kyc():
         resp = Response(json.dumps(token))
         resp.status_code = 200
         print(resp)
-            
-         
+        
         print("received data")
-            
-        languages.append(user_info)
-        return resp
 
+        return resp
+    
+##
+# For companies to get access to the registering user(user that register company) to retrieve the user info
+##
 @app.route("/register_org", methods=['POST'])
 def register_org():
     #receive block_id sent from the company
@@ -282,7 +277,10 @@ def register_org():
         resp.status_code = 500
         
         return resp
-
+    
+##
+# After the company retrieved the user data, a new AES key will be generated to reencrypt the user blockchain for security purpose
+##
 @app.route("/update_token", methods = ['POST'])
 def update_token():
     print(request.json)
@@ -291,13 +289,6 @@ def update_token():
 
     old_AES_key = decrypted["AES_key"]
     block_id = decrypted["block_id"]
-    
-    #get the corresponding encrypted user info from the block
-#    token = os.environ['BLOCKCHAIN_TOKEN']
-#    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
-#    print("out")
-#    print(r.status_code)
-#    print(r.text)
     
     status_code,userData = get_user_from_blockchain(block_id)
     if (status_code == 200):  
@@ -342,10 +333,12 @@ def update_token():
  # They can then use this public key to encrypt their requests
  ##
 @app.route("/getkey", methods = ['GET'])
-
 def get_key():
     return os.environ["PUB_KEY"].replace("\\n","\n")
 
+##
+# This function allows for the user who lost their token to report lost and disabled the token
+##
 @app.route("/token_lost",methods = ['POST'])
 def token_lost():
     decrypted = decrypt_request(request.json)
@@ -355,6 +348,7 @@ def token_lost():
         "$class": "org.acme.biznet.revokeAccess",
         "hashed_id": block_id
         } 
+    
     #post it to hyperledger
     r = requests.post("https://173.193.102.98:31090/api/revokeAccess?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
     print(r.status_code)
@@ -373,32 +367,5 @@ def token_lost():
 #@app.route("/regenerate_token",methods = ['POST'])
 #def regenerate_token():
     
-
-#def check_auth(username, password):
-#    return username == 'admin' and password == 'secret'
-#
-#def authenticate():
-#    message = {'message':"Authenticate."}
-#    
-#    resp = jsonify(message)
-#    resp.status_code = 401
-#    resp.headers['WWW-Authenticate'] = 'Basic realm = "Example"'
-#    
-#    return resp
-#
-#def requires_auth(f):
-#    @wraps(f)
-#    def decorated(*args,**kwargs):
-#        auth = request.authorization
-#        if not auth:
-#            return authenticate()
-#        
-#        elif not check_auth(auth.username, auth.password):
-#            return authenticate()
-#        return f(*args, **kwargs)
-#    
-#    return decorated
-    
-
 if __name__ == "__main__":
     app.run()
