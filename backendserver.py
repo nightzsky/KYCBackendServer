@@ -96,30 +96,30 @@ def new_user_blockchain(block_id, encrypted_info):
         print("New user %s successfully created in blockchain."%block_id)
         return True
 
-#def update_user_blockchain(block_id, encrypted_info):
-#    payload = {
-#            "$class": "org.acme.biznet.updateUserEncryptedData",
-#            "hashed_id": block_id,
-#            "newData": {
-#                    "$class": "org.acme.biznet.UserData",
-#                    "name": encrypted["name"],
-#                    "encrypted_id": encrypted["encrypted_id"],
-#                    "postcode": encrypted["postcode"],
-#                    "birthdate": encrypted["birthdate"],
-#                    "merkle_root": encrypted["merkle_root"],
-#                    "rsa_public_key": encrypted["rsa_public_key"],
-#                    }
-#            }
-#            
-#    #post it to hyperledger
-#    r = requests.post("https://173.193.102.98:31090/api/updateUserEncryptedData/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
-#    
-#    if r.status_code != 200:
-#        print("Error in updating user in blockchain: request returned %d"%r.status_code)
-#        print("Request response: %s"%r.text)
-#    else:
-#        print("User %s successfully created in blockchain."%block_id)
-#        return True;
+def update_user_blockchain(block_id, encrypted_info):
+    payload = {
+            "$class": "org.acme.biznet.updateUserEncryptedData",
+            "hashed_id": block_id,
+            "newData": {
+                    "$class": "org.acme.biznet.UserData",
+                    "name": encrypted["name"],
+                    "encrypted_id": encrypted["encrypted_id"],
+                    "postcode": encrypted["postcode"],
+                    "birthdate": encrypted["birthdate"],
+                    "merkle_root": encrypted["merkle_root"],
+                    "rsa_public_key": encrypted["rsa_public_key"],
+                    }
+            }
+            
+    #post it to hyperledger
+    r = requests.post("https://173.193.102.98:31090/api/updateUserEncryptedData/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
+    
+    if r.status_code != 200:
+        print("Error in updating user in blockchain: request returned %d"%r.status_code)
+        print("Request response: %s"%r.text)
+    else:
+        print("User %s successfully created in blockchain."%block_id)
+        return True;
     
 ##
 # This function decrypts an incoming HTTP request using the RSA private key
@@ -249,52 +249,52 @@ def register_org():
         
         return resp
 
-#@app.route("/update_token", methods = ['POST'])
-#def update_token():
-#    print(request.json)
-#    decrypted = decrypt_request(request.json)
-#    print(decrypted)
-#
-#    old_AES_key = decrypted["AES_key"]
-#    block_id = decrypted["block_id"]
-#    
-#    #get the corresponding encrypted user info from the block
-#    token = os.environ['BLOCKCHAIN_TOKEN']
-#    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
-#    print(r.status_code)
-#    print(r.text)
-#    
-#    userData = json.loads(r.text)
-#    userData = userData["userData"]
-#    del userData["$class"]
-#    print(userData)
-#           
-#    #decrpyt the user data with AES key
-#    for key in userData:
-#        print("decrypting %s now"%key)
-#        userData[key] = aes_decrypt(userData[key],old_AES_key)
-#    print(userData)
-#    
-#    #generate AES key for the user
-#    new_AES_key = Random.new().read(32)
-#    print("Generating AES key: %s"%new_AES_key)
-#    
-#    #encrypt the userData with new AES_key
-#    new_encrpyted_userData = encrypt_dict(userData,new_AES_key)
-#        
-#    print("Encrypted user info: %s"%str(new_encrypted_userData))
-#    print("Storing encrypted user info in block")
-#        
-#    update_user_success = update_user_blockchain(block_id,new_encrypted_userData)
-#    
-#    if not update_user_success:
-#        resp = Response(json.dumps({"Error":"Fail to update the blockchain."}))
-#        resp.status_code = 500
-#        return resp
-#    
-#    resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
-#    resp.status_code = 200
-#    return resp
+@app.route("/update_token", methods = ['POST'])
+def update_token():
+    print(request.json)
+    decrypted = decrypt_request(request.json)
+    print(decrypted)
+
+    old_AES_key = decrypted["AES_key"]
+    block_id = decrypted["block_id"]
+    
+    #get the corresponding encrypted user info from the block
+    token = os.environ['BLOCKCHAIN_TOKEN']
+    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
+    print(r.status_code)
+    print(r.text)
+    
+    userData = json.loads(r.text)
+    userData = userData["userData"]
+    del userData["$class"]
+    print(userData)
+           
+    #decrpyt the user data with AES key
+    for key in userData:
+        print("decrypting %s now"%key)
+        userData[key] = aes_decrypt(userData[key],old_AES_key)
+    print(userData)
+    
+    #generate AES key for the user
+    new_AES_key = Random.new().read(32)
+    print("Generating AES key: %s"%new_AES_key)
+    
+    #encrypt the userData with new AES_key
+    new_encrpyted_userData = encrypt_dict(userData,new_AES_key)
+        
+    print("Encrypted user info: %s"%str(new_encrypted_userData))
+    print("Storing encrypted user info in block")
+        
+    update_user_success = update_user_blockchain(block_id,new_encrypted_userData)
+    
+    if not update_user_success:
+        resp = Response(json.dumps({"Error":"Fail to update the blockchain."}))
+        resp.status_code = 500
+        return resp
+    
+    resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
+    resp.status_code = 200
+    return resp
 
  ##
  # This function returns the public key for the KYC backend
