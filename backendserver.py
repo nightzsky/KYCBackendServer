@@ -18,7 +18,7 @@ from validity import isValidInput
 app = Flask(__name__)
 
 ##
-# For Authentication
+# These methods are for Authentication
 ##
 def check_auth(username, password):
     return username == 'admin' and password == 'secret'
@@ -180,13 +180,13 @@ def register_kyc():
     id_number = decrypted["id_number"]
     dob = decrypted["dob"]
 
-#    if not isValidInput(decrypted):
-#        resp = Response(json.dumps({"message":"invalid input"}))
-#        resp.status_code = 400
-#        return resp
-    happy = False
-    if(happy):
-        name = "hi"
+    if not isValidInput(decrypted):
+        resp = Response(json.dumps({"message":"invalid input"}))
+        resp.status_code = 400
+        return resp
+#    happy = False
+#    if(happy):
+#        name = "hi"
     
     else:
         #create a new dictionary for user_info
