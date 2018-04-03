@@ -362,7 +362,36 @@ def token_lost():
     else:
         resp = Response(json.dumps({"Error":"Failed to revoke access"}))
         resp.status_code = 400
-        return resp   
+        return resp  
+
+##
+# This function re-enables the token
+##
+@app.route("/token_found", methods = ['POST'])
+@requires_auth
+def token_found():
+    decrypted = decrypt_request(request.json)
+    block_id = decrypted["block_id"]
+    
+    payload = {
+        "$class": "org.acme.biznet.grantAccess",
+        "hashed_id": block_id
+        } 
+    
+    #post it to hyperledger
+    r = requests.post("https://173.193.102.98:31090/api/grantAccess?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
+    print(r.status_code)
+    print(r.text)
+    
+    if (r.status_code == 200):
+        resp = Response(json.dumps({"Message":"The access is changed to true"}))
+        resp.status_code = 200
+        return resp
+    
+    else:
+        resp = Response(json.dumps({"Error":"Failed to revoke access"}))
+        resp.status_code = 400
+        return resp  
 #
 #@app.route("/regenerate_token",methods = ['POST'])
 #def regenerate_token():

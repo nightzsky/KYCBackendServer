@@ -1,6 +1,9 @@
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.json.JSONObject;
 
 /**
@@ -36,6 +39,8 @@ public class UserRegisterKYC {
             //set the request method to Post
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type","application/json");
+            String encoded = Base64.getEncoder().encodeToString(("admin"+":"+"secret").getBytes(StandardCharsets.UTF_8));  //Java 8
+            urlConnection.setRequestProperty("Authorization", "Basic "+encoded);
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
 
@@ -53,16 +58,6 @@ public class UserRegisterKYC {
             return 0;
         }
     }
-
-    public static void main(String[] args) {
-        UserRegisterKYC userRegister = new UserRegisterKYC("hello","S9503226E","26/01/1995","738583");
-        System.out.println(userRegister.sendRegisterRequest());
-        UserRegisterKYC userRegister1 = new UserRegisterKYC("hello","S1316428B","26/01/1995","738583");
-        System.out.println(userRegister1.sendRegisterRequest());
-        UserRegisterKYC userRegister2 = new UserRegisterKYC("hello","S1393715Z","26/01/1995","738583");
-        System.out.println(userRegister2.sendRegisterRequest());
-    }
-
 }
 
 
