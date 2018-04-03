@@ -280,7 +280,7 @@ def update_token():
     print("Generating AES key: %s"%new_AES_key)
     
     #encrypt the userData with new AES_key
-    new_encrpyted_userData = encrypt_dict(userData,new_AES_key)
+    new_encrypted_userData = encrypt_dict(userData,new_AES_key)
         
     print("Encrypted user info: %s"%str(new_encrypted_userData))
     print("Storing encrypted user info in block")
