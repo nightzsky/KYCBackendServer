@@ -7,14 +7,14 @@ import static org.junit.Assert.*;
  * The bulk of the testing is to ensure that invalid requests are not accepted
  */
 public class UserRegisterKYCTest {
-    String validId = "S9503226E";
-    String validId2 = "S1316428B";
-    String validId3 = "S1393715Z";
+    String validId = "INSERT VALID SINGAPOREAN ID HERE";
+    String validId2 = "INSERT VALID SINGAPOREAN ID HERE";
+    String validId3 = "INSERT VALID SINGAPOREAN ID HERE";
     @Test
     public void testCorrectRegistration(){
         UserRegisterKYC userRegister = new UserRegisterKYC("hello",validId,"26/02/1995","738583");
         int requestResponse = userRegister.sendRegisterRequest();
-        assertEquals(200,requestResponse);
+        assertEquals(200, requestResponse);
     }
 
     /**
@@ -37,11 +37,11 @@ public class UserRegisterKYCTest {
     public void testIncorrectName(){
         UserRegisterKYC nameWithNumber = new UserRegisterKYC("hello123",validId3,"26/02/1995","738583");
         int requestResponse = nameWithNumber.sendRegisterRequest();
-        assertEquals(400,requestResponse);
+        assertEquals(400, requestResponse);
 
         UserRegisterKYC nameWithSymbol = new UserRegisterKYC("hello!", validId3, "26/02/1995","587631");
         requestResponse = nameWithSymbol.sendRegisterRequest();
-        assertEquals(400,requestResponse);
+        assertEquals(400, requestResponse);
     }
 
     /**
@@ -54,7 +54,7 @@ public class UserRegisterKYCTest {
     public void testIncorrectId(){
         UserRegisterKYC idTooLong = new UserRegisterKYC("hello","S12345678B","26/02/1995","738583");
         int requestResponse = idTooLong.sendRegisterRequest();
-        assertEquals(400,requestResponse);
+        assertEquals(400, requestResponse);
 
         UserRegisterKYC nonAlphanumId = new UserRegisterKYC("hello","S12345!8B","26/02/1995","738583");
         requestResponse = nonAlphanumId.sendRegisterRequest();
