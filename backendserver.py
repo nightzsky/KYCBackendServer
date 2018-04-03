@@ -320,7 +320,7 @@ def token_lost():
     decrypted = decrypt_request(request.json)
     block_id = decrypted["block_id"]
     
-    pay_load = {
+    payload = {
         "$class": "org.acme.biznet.revokeAccess",
         "hashed_id": block_id
         } 
