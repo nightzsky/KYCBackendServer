@@ -66,6 +66,14 @@ def encrypt_dict(raw, AES_key):
         encrypted[key] = aes_encrypt(raw[key], AES_key)
     return encrypted
 
+def get_user_from_blockchain(block_id):
+    #get the corresponding encrypted user info from the block
+    token = os.environ['BLOCKCHAIN_TOKEN']
+    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
+    print(r.status_code)
+    print(r.text)
+    return json.loads(r.text)
+
 ##
 # Creates a new user in the hyperledger blockchain
 ##
@@ -229,14 +237,11 @@ def register_org():
     block_id = request.json["block_id"]
     
     #get the corresponding encrypted user info from the block
-    token = os.environ['BLOCKCHAIN_TOKEN']
-    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
-    print(r.status_code)
-    print(r.text)
+    encrypted_info = get_user_from_blockchain(block_id)
     
     if (r.status_code == 200): # if success in retreiving the user info from blockchain
         #post the encrypted user info back to the companybackend
-        resp = Response(json.dumps(json.loads(r.text)))
+        resp = Response(json.dumps(encrypted_info))
         resp.status_code = 200
         print(resp)
         
@@ -258,13 +263,13 @@ def update_token():
     block_id = decrypted["block_id"]
     
     #get the corresponding encrypted user info from the block
-    token = os.environ['BLOCKCHAIN_TOKEN']
-    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
-    print("out")
-    print(r.status_code)
-    print(r.text)
+#    token = os.environ['BLOCKCHAIN_TOKEN']
+#    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
+#    print("out")
+#    print(r.status_code)
+#    print(r.text)
     
-    userData = json.loads(r.text)
+    userData = get_user_from_blockchain(block_id)
     userData = userData["userData"]
     del userData["$class"]
     print(userData)
@@ -294,11 +299,6 @@ def update_token():
     resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
     resp.status_code = 200
     
-    print("new")
-    r = requests.get("https://173.193.102.98:31090/api/User/%s?access_token=%s"%(block_id,token), verify = False)
-    print(r.status_code)
-    print(r.text)
-    
     return resp
 
  ##
@@ -310,7 +310,33 @@ def update_token():
 def get_key():
     return os.environ["PUB_KEY"].replace("\\n","\n")
 
-
+@app.route("/token_lost",methods = ['POST'])
+def token_lost():
+    decrypted = decrypt_request(request.json)
+    block_id = decrypted["block_id"]
+    
+    pay_load = {
+        "$class": "org.acme.biznet.revokeAccess",
+        "hashed_id": block_id
+        } 
+    #post it to hyperledger
+    r = requests.post("https://173.193.102.98:31090/api/revokeAccess?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], json = payload, verify = False)
+    print(r.status_code)
+    print(r.text)
+    
+    if (r.status_code == 200):
+        resp = Response(json.dumps({"Message":"The access is changed to false"}))
+        resp.status_code = 200
+        return resp
+    
+    else:
+        resp = Response(json.dumps({"Error":"Failed to revoke access"}))
+        resp.status_code = 400
+        return resp   
+#
+#@app.route("/regenerate_token",methods = ['POST'])
+#def regenerate_token():
+    
 
 #def check_auth(username, password):
 #    return username == 'admin' and password == 'secret'
