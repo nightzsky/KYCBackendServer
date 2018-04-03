@@ -279,13 +279,18 @@ def update_token():
     new_AES_key = Random.new().read(32)
     print("Generating AES key: %s"%new_AES_key)
     
-    #encrypt the userData with new AES_key
-    new_encrypted_userData = encrypt_dict(userData,new_AES_key)
+    encrypted_user_info = encrypt_dict(userData,AES_key)
         
-    print("Encrypted user info: %s"%str(new_encrypted_userData))
+    print("Encrypted user info: %s"%str(encrypted_user_info))
     print("Storing encrypted user info in block")
+    
+#    #encrypt the userData with new AES_key
+#    new_encrypted_userData = encrypt_dict(userData,new_AES_key)
+#        
+#    print("Encrypted user info: %s"%str(new_encrypted_userData))
+#    print("Storing encrypted user info in block")
         
-    update_user_success = update_user_blockchain(block_id,new_encrypted_userData)
+    update_user_success = update_user_blockchain(block_id,encrypted_user_info)
     
     if not update_user_success:
         resp = Response(json.dumps({"Error":"Fail to update the blockchain."}))
