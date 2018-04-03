@@ -17,7 +17,7 @@ import os
 import ast
 from functools import wraps
 from validity import isValidInput
-from flask_basicauth import BasicAuth
+#from flask_basicauth import BasicAuth
 
 app = Flask(__name__)
 #
