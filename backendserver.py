@@ -17,12 +17,12 @@ import os
 import ast
 from functools import wraps
 from validity import isValidInput
-from flask_basicauth import BasicAuth
+#from flask_basicauth import BasicAuth
 
 app = Flask(__name__)
 #
-app.config['BASIC_AUTH_USERNAME'] = 'admin'
-app.config['BASIC_AUTH_PASSWORD'] = 'secret'
+#app.config['BASIC_AUTH_USERNAME'] = 'admin'
+#app.config['BASIC_AUTH_PASSWORD'] = 'secret'
 
 def check_auth(username, password):
     return username == 'admin' and password == 'secret'
@@ -175,7 +175,7 @@ def decrypt_request(json):
     return decrypted
 
 @app.route("/register_kyc", methods = ['POST'])
-@app.required
+@requires_auth
 def register_kyc():  
     #retrieve data 
     print(request.json)
