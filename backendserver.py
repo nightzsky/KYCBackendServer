@@ -96,7 +96,7 @@ def new_user_blockchain(block_id, encrypted_info):
         print("New user %s successfully created in blockchain."%block_id)
         return True
 
-def update_user_blockchain(block_id, encrypted_info):
+def update_user_blockchain(block_id, encrypted):
     payload = {
             "$class": "org.acme.biznet.updateUserEncryptedData",
             "hashed_id": block_id,
