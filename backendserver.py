@@ -20,6 +20,7 @@ app = Flask(__name__)
 
 #Connect to the postgresql database. returns the connection object and its cursor
 def connect_db():
+    os.environ['DATABASE_URL'] =  "postgres://rsetfziuscbspv:336cd83a2bded0f724eeca0568dba256a9ebc740a6747a5f95b7b2010ce4f0f9@ec2-54-235-193-34.compute-1.amazonaws.com:5432/d9n9f48fulejkc"
     conn = psycopg2.connect(os.environ['DATABASE_URL'], sslmode = 'require')
     cur = conn.cursor()
     return conn, cur
