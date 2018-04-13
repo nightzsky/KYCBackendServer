@@ -47,6 +47,12 @@ def add_token_to_database(block_id,private_key,AES_key,merkle_raw):
                 VALUES (%s,%s,%s,%s)",(block_id,private_key,AES_key,merkle_raw))
     conn.commit()
     conn.close()
+    
+def update_token_database(block_id,new_AES_key):
+    conn,cur = connect_db()
+    cur.execute("UPDATE TOKEN_DATABASE set AES_KEY = '%s' WHERE BLOCK_ID = '%s'"%(new_AES_key,block_id))
+    conn.commit()
+    conn.close()
 
 ##
 # These methods are for Authentication
@@ -358,6 +364,7 @@ def update_token():
         
         update_user_success = update_user_blockchain(block_id,encrypted_user_info)
         
+        
         if not update_user_success:
             resp = Response(json.dumps({"Error":"Fail to update the blockchain."}))
             resp.status_code = 500
@@ -365,6 +372,8 @@ def update_token():
         
         resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
         resp.status_code = 200
+        
+        update_token_database(block_id,new_AES_key)
         
         return resp
     else:
