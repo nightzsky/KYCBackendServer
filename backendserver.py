@@ -18,41 +18,41 @@ from validity import isValidInput
 
 app = Flask(__name__)
 
-#Connect to the postgresql database. returns the connection object and its cursor
-def connect_db():
-    os.environ['DATABASE_URL'] =  "postgres://rsetfziuscbspv:336cd83a2bded0f724eeca0568dba256a9ebc740a6747a5f95b7b2010ce4f0f9@ec2-54-235-193-34.compute-1.amazonaws.com:5432/d9n9f48fulejkc"
-    conn = psycopg2.connect(os.environ['DATABASE_URL'], sslmode = 'require')
-    cur = conn.cursor()
-    return conn, cur
-
-#retrieves token info from the database
-def get_token(block_id):
-    conn,cur = connect_db()
-    cur.execute("SELECT * FROM TOKEN_DATABASE")
-    rows = cur.fetchall()
-    private_key = ""
-    AES_key = ""
-    merkle_raw = ""
-    for row in rows:
-        if (row[0] == block_id):
-            private_key = row[1]
-            AES_key = row[2]
-            merkle_raw = row[3]
-    return private_key,AES_key,merkle_raw
-
-#add the decrypted user info to the company database
-def add_token_to_database(block_id,private_key,AES_key,merkle_raw):
-    conn,cur = connect_db()
-    cur.execute("INSERT INTO TOKEN_DATABASE (BLOCK_ID,PRIVATE_KEY,AES_KEY,MERKLE_RAW) \
-                VALUES (%s,%s,%s,%s)",(block_id,private_key,AES_key,merkle_raw))
-    conn.commit()
-    conn.close()
-    
-def update_token_database(block_id,new_AES_key):
-    conn,cur = connect_db()
-    cur.execute("UPDATE TOKEN_DATABASE set AES_KEY = '%s' WHERE BLOCK_ID = '%s'"%(new_AES_key,block_id))
-    conn.commit()
-    conn.close()
+##Connect to the postgresql database. returns the connection object and its cursor
+#def connect_db():
+#    os.environ['DATABASE_URL'] =  "postgres://rsetfziuscbspv:336cd83a2bded0f724eeca0568dba256a9ebc740a6747a5f95b7b2010ce4f0f9@ec2-54-235-193-34.compute-1.amazonaws.com:5432/d9n9f48fulejkc"
+#    conn = psycopg2.connect(os.environ['DATABASE_URL'], sslmode = 'require')
+#    cur = conn.cursor()
+#    return conn, cur
+#
+##retrieves token info from the database
+#def get_token(block_id):
+#    conn,cur = connect_db()
+#    cur.execute("SELECT * FROM TOKEN_DATABASE")
+#    rows = cur.fetchall()
+#    private_key = ""
+#    AES_key = ""
+#    merkle_raw = ""
+#    for row in rows:
+#        if (row[0] == block_id):
+#            private_key = row[1]
+#            AES_key = row[2]
+#            merkle_raw = row[3]
+#    return private_key,AES_key,merkle_raw
+#
+##add the decrypted user info to the company database
+#def add_token_to_database(block_id,private_key,AES_key,merkle_raw):
+#    conn,cur = connect_db()
+#    cur.execute("INSERT INTO TOKEN_DATABASE (BLOCK_ID,PRIVATE_KEY,AES_KEY,MERKLE_RAW) \
+#                VALUES (%s,%s,%s,%s)",(block_id,private_key,AES_key,merkle_raw))
+#    conn.commit()
+#    conn.close()
+#    
+#def update_token_database(block_id,new_AES_key):
+#    conn,cur = connect_db()
+#    cur.execute("UPDATE TOKEN_DATABASE set AES_KEY = '%s' WHERE BLOCK_ID = '%s'"%(new_AES_key,block_id))
+#    conn.commit()
+#    conn.close()
 
 ##
 # These methods are for Authentication
@@ -275,17 +275,11 @@ def register_kyc():
         token["AES_key"] = str(list(AES_key))
         token["block_id"] = block_id
         token["merkle_raw"] = merkles
-        
-        #add token to the database
-        add_token_to_database(token["block_id"],token["private_key"],token["AES_key"],token["merkle_raw"])
             
         print(token)
         
-        temp_token = {}
-        temp_token["block_id"] = block_id
-            
         #send back to the user
-        resp = Response(json.dumps(temp_token))
+        resp = Response(json.dumps(token))
         resp.status_code = 200
         print(resp)
         
@@ -327,18 +321,15 @@ def update_token():
     decrypted = decrypt_request(request.json)
     print(decrypted)
     
-    #old_AES_key = decrypted["AES_key"]
+    old_AES_key = decrypted["AES_key"]
     block_id = decrypted["block_id"]
     
-    #get token details from database
-    private_key,AES_key,merkle_raw = get_token(block_id)
-    
-    if (private_key=="" or AES_key == "" or merkle_raw == ""):
-        resp = Response(json.dumps({"Error":"Token is invalid!"}))
-        resp.status_code = 400
-        return resp
-    
-    old_AES_key = AES_key
+#    if (private_key=="" or AES_key == "" or merkle_raw == ""):
+#        resp = Response(json.dumps({"Error":"Token is invalid!"}))
+#        resp.status_code = 400
+#        return resp
+#    
+#    old_AES_key = AES_key
     
     status_code,userData = get_user_from_blockchain(block_id)
     
@@ -369,11 +360,10 @@ def update_token():
             resp = Response(json.dumps({"Error":"Fail to update the blockchain."}))
             resp.status_code = 500
             return resp
+#        resp = Response(json.dumps({"block_id":block_id}))
         
         resp = Response(json.dumps({"AES_key":str(list(new_AES_key))}))
         resp.status_code = 200
-        
-        update_token_database(block_id,new_AES_key)
         
         return resp
     else:
