@@ -180,7 +180,7 @@ def register_kyc():
     dob = decrypted["dob"]
 
     if not isValidInput(decrypted):
-        resp = Response(json.dumps({"message":"invalid input"}))
+        resp = Response(json.dumps({"Error":"invalid input"}))
         resp.status_code = 400
         return resp
     
@@ -223,7 +223,7 @@ def register_kyc():
 
         #stop execution if user was not successfully created in blockchain
         if not new_user_success:
-            resp = Response(json.dumps({"message": "Creating new user on blockchain failed"}))
+            resp = Response(json.dumps({"Error": "Creating new user on blockchain failed"}))
             resp.status_code = 500
             return resp
         
