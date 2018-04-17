@@ -337,12 +337,12 @@ def get_key():
 def token_lost():
     decrypted = decrypt_request(request.json)
     block_id = decrypted["block_id"]
-    r = requests.get("https://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], verify = False)
+    r = requests.get("https://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], verify = alse)
     list_of_id = []
     for i in r.json():
         list_of_id.append(i['hashed_id'])
     if block_id not in list_of_id:
-        resp = Response(json.dumps({"Message: ID is invalid"}))
+        resp = Response(json.dumps({"Message": "ID is invalid"}))
         resp.status_code = 400
         return resp
     payload = {
@@ -356,7 +356,7 @@ def token_lost():
     print(r.text)
     
     if (r.status_code == 200):
-        resp = Response(json.dumps({"Message: The access is changed to false"}))
+        resp = Response(json.dumps({"Message":"The access is changed to false"}))
         resp.status_code = 200
         return resp
     
