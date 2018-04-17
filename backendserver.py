@@ -337,7 +337,7 @@ def get_key():
 def token_lost():
     decrypted = decrypt_request(request.json)
     block_id = decrypted["block_id"]
-    r = requests.get("https://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], verify = alse)
+    r = requests.get("https://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], verify = False)
     list_of_id = []
     for i in r.json():
         list_of_id.append(i['hashed_id'])
