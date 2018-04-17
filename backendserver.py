@@ -373,7 +373,14 @@ def token_lost():
 def token_found():
     decrypted = decrypt_request(request.json)
     block_id = decrypted["block_id"]
-    
+    r = requests.get("https://173.193.102.98:31090/api/User?access_token=%s"%os.environ['BLOCKCHAIN_TOKEN'], verify = False)
+    list_of_id = []
+    for i in r.json():
+        list_of_id.append(i['hashed_id'])
+    if block_id not in list_of_id:
+        resp = Response(json.dumps({"Message": "ID is invalid"}))
+        resp.status_code = 400
+        return resp
     payload = {
         "$class": "org.acme.biznet.grantAccess",
         "hashed_id": block_id
