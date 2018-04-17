@@ -356,7 +356,7 @@ def token_lost():
     print(r.text)
     
     if (r.status_code == 200):
-        resp = Response(json.dumps({"Message":"The access is changed to false"}))
+        resp = Response(json.dumps({"Message: The access is changed to false"}))
         resp.status_code = 200
         return resp
     
