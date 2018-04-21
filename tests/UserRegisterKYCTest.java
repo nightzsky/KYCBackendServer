@@ -1,5 +1,7 @@
 import org.junit.Test;
 
+import java.util.Random;
+
 import static org.junit.Assert.*;
 
 /**
@@ -7,9 +9,9 @@ import static org.junit.Assert.*;
  * The bulk of the testing is to ensure that invalid requests are not accepted
  */
 public class UserRegisterKYCTest {
-    String validId = "INSERT VALID SINGAPOREAN ID HERE";
-    String validId2 = "INSERT VALID SINGAPOREAN ID HERE";
-    String validId3 = "INSERT VALID SINGAPOREAN ID HERE";
+    String validId = "INSERT VALID SG ID HERE";
+    String validId2 = "INSERT VALID SG ID HERE";
+    String validId3 = "INSERT VALID SG ID HERE";
     @Test
     public void testCorrectRegistration(){
         UserRegisterKYC userRegister = new UserRegisterKYC("hello",validId,"26/02/1995","738583");
@@ -148,4 +150,15 @@ public class UserRegisterKYCTest {
         requestResponse = startWithMoreThan82.sendRegisterRequest();
         assertEquals(400,requestResponse);
     }
+
+    // Robustness test that uses a lot of random inputs and ensures that the system does not accept these requests
+    @Test
+    public void testRobustnessRegisterKyc(){
+        for (int i = 0; i < 100; i++){
+            UserRegisterKYC userRegisterKyc = new UserRegisterKYC(RandomInput.randomString(), RandomInput.randomString(), RandomInput.randomString(), RandomInput.randomString());
+            int requestResponse = userRegisterKyc.sendRegisterRequest();
+            assertFalse(requestResponse==200);
+        }
+    }
+
 }
